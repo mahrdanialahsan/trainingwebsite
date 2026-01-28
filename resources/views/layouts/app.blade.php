@@ -46,28 +46,30 @@
                 <div class="flex items-center space-x-6">
                     <a href="{{ route('home') }}" class="text-brand-primary font-medium hover:text-brand-dark transition" data-turbo-action="advance">Home</a>
                     <a href="{{ route('about') }}" class="text-brand-primary font-medium hover:text-brand-dark transition" data-turbo-action="advance">About</a>
-                    <div class="relative group" data-controller="dropdown" data-dropdown-open-value="false">
-                        <a href="{{ route('trainings.index') }}" class="text-brand-primary font-medium hover:text-brand-dark transition flex items-center" data-action="click->dropdown#toggle">
+                    <div class="relative group">
+                        <a href="{{ route('trainings.index') }}" class="text-brand-primary font-medium hover:text-brand-dark transition flex items-center">
                             Training
                             <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                             </svg>
                         </a>
-                        <div data-dropdown-target="menu" class="absolute left-0 mt-2 w-64 bg-white shadow-lg border border-gray-200 hidden opacity-0 invisible transition-all duration-200 z-50">
-                            <div class="py-2">
-                                @php
-                                    $trainings = \App\Models\Training::where('is_active', true)->orderBy('order')->get();
-                                @endphp
-                                @if($trainings->count() > 0)
-                                    <div class="px-4 py-2 text-sm font-semibold text-brand-primary border-b border-gray-200">Training Programs</div>
-                                    @foreach($trainings as $training)
-                                        <a href="{{ route('trainings.show', $training->slug) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition" data-turbo-action="advance">
-                                            {{ $training->title }}
-                                        </a>
-                                    @endforeach
-                                @else
-                                    <div class="px-4 py-2 text-sm text-gray-500">No trainings available</div>
-                                @endif
+                        <div class="absolute left-0 top-full pt-2 w-64 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 pointer-events-none group-hover:pointer-events-auto">
+                            <div class="bg-white shadow-lg border border-gray-200">
+                                <div class="py-2">
+                                    @php
+                                        $trainings = \App\Models\Training::where('is_active', true)->orderBy('order')->get();
+                                    @endphp
+                                    @if($trainings->count() > 0)
+                                        <div class="px-4 py-2 text-sm font-semibold text-brand-primary border-b border-gray-200">Training Programs</div>
+                                        @foreach($trainings as $training)
+                                            <a href="{{ route('trainings.show', $training->slug) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition" data-turbo-action="advance">
+                                                {{ $training->title }}
+                                            </a>
+                                        @endforeach
+                                    @else
+                                        <div class="px-4 py-2 text-sm text-gray-500">No trainings available</div>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -77,8 +79,8 @@
                     <a href="{{ route('contact') }}" class="text-brand-primary font-medium hover:text-brand-dark transition" data-turbo-action="advance">Contact</a>
                     
                     @auth
-                    <div class="relative group" data-controller="dropdown" data-dropdown-open-value="false">
-                        <a href="{{ route('dashboard') }}" class="text-brand-primary font-medium hover:text-brand-dark transition flex items-center" data-action="click->dropdown#toggle">
+                    <div class="relative group">
+                        <a href="{{ route('dashboard') }}" class="text-brand-primary font-medium hover:text-brand-dark transition flex items-center">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                             </svg>
@@ -87,16 +89,18 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                             </svg>
                         </a>
-                        <div data-dropdown-target="menu" class="absolute right-0 mt-2 w-48 bg-white shadow-lg border border-gray-200 hidden opacity-0 invisible transition-all duration-200 z-50">
-                            <div class="py-2">
-                                <a href="{{ route('dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition" data-turbo-action="advance">Dashboard</a>
-                                <a href="{{ route('dashboard', ['tab' => 'bookings']) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition" data-turbo-action="advance">My Bookings</a>
-                                <a href="{{ route('dashboard', ['tab' => 'orders']) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition" data-turbo-action="advance">Orders</a>
-                                <a href="{{ route('dashboard', ['tab' => 'account']) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition" data-turbo-action="advance">My Account</a>
-                                <form method="POST" action="{{ route('logout') }}" class="border-t border-gray-200 mt-2 pt-2" data-turbo="false">
-                                    @csrf
-                                    <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition">Logout</button>
-                                </form>
+                        <div class="absolute right-0 top-full pt-2 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 pointer-events-none group-hover:pointer-events-auto">
+                            <div class="bg-white shadow-lg border border-gray-200">
+                                <div class="py-2">
+                                    <a href="{{ route('dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition" data-turbo-action="advance">Dashboard</a>
+                                    <a href="{{ route('dashboard', ['tab' => 'bookings']) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition" data-turbo-action="advance">My Bookings</a>
+                                    <a href="{{ route('dashboard', ['tab' => 'orders']) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition" data-turbo-action="advance">Orders</a>
+                                    <a href="{{ route('dashboard', ['tab' => 'account']) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition" data-turbo-action="advance">My Account</a>
+                                    <form method="POST" action="{{ route('logout') }}" class="border-t border-gray-200 mt-2 pt-2" data-turbo="false">
+                                        @csrf
+                                        <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition">Logout</button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>

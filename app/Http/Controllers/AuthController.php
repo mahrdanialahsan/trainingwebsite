@@ -6,7 +6,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
@@ -31,9 +30,16 @@ class AuthController extends Controller
             // Check if user is active
             if (!$user->is_active) {
                 Auth::logout();
-                throw ValidationException::withMessages([
-                    'email' => ['Your account has been deactivated. Please contact support.'],
-                ]);
+                if ($request->ajax() || $request->wantsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Your account has been deactivated. Please contact support.',
+                        'errors' => ['email' => ['Your account has been deactivated. Please contact support.']]
+                    ], 422);
+                }
+                return redirect()->route('login')->withErrors([
+                    'email' => 'Your account has been deactivated. Please contact support.',
+                ])->withInput($request->only('email'));
             }
             
             // Check if email is verified
@@ -41,17 +47,42 @@ class AuthController extends Controller
                 Auth::logout();
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
+                if ($request->ajax() || $request->wantsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Please verify your email address before logging in.',
+                        'redirect' => route('verification.notice'),
+                        'errors' => ['email' => ['Please verify your email address before logging in.']]
+                    ], 422);
+                }
                 return redirect()->route('verification.notice')
                     ->with('warning', 'Please verify your email address before logging in.');
             }
             
             $request->session()->regenerate();
+            
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Login successful!',
+                    'redirect' => route('dashboard')
+                ]);
+            }
+            
             return redirect()->intended(route('dashboard'));
         }
 
-        throw ValidationException::withMessages([
-            'email' => ['The provided credentials do not match our records.'],
-        ]);
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'The provided credentials do not match our records.',
+                'errors' => ['email' => ['The provided credentials do not match our records.']]
+            ], 422);
+        }
+
+        return redirect()->route('login')->withErrors([
+            'email' => 'The provided credentials do not match our records.',
+        ])->withInput($request->only('email'));
     }
 
     public function showRegisterForm()
@@ -64,24 +95,48 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users',
+                'phone' => 'nullable|string|max:20',
+                'password' => 'required|string|min:8|confirmed',
+            ]);
 
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'is_active' => true,
-        ]);
+            $user = User::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'phone' => $validated['phone'] ?? null,
+                'password' => Hash::make($validated['password']),
+                'is_active' => true,
+            ]);
 
-        // Send email verification notification
-        $user->sendEmailVerificationNotification();
+            // Log the user in
+            Auth::login($user);
 
-        return redirect()->route('verification.notice')
-            ->with('success', 'Registration successful! Please check your email to verify your account.');
+            // Send email verification notification
+            $user->sendEmailVerificationNotification();
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Registration successful! We\'ve sent a verification email to ' . $user->email . '. Please check your inbox and click the verification link to activate your account.',
+                    'redirect' => route('verification.notice')
+                ]);
+            }
+
+            return redirect()->route('verification.notice')
+                ->with('success', 'Registration successful! We\'ve sent a verification email to ' . $user->email . '. Please check your inbox and click the verification link to activate your account.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $e->errors()
+                ], 422);
+            }
+            throw $e;
+        }
     }
 
     public function logout(Request $request)
@@ -138,6 +193,6 @@ class AuthController extends Controller
 
         $request->user()->sendEmailVerificationNotification();
 
-        return back()->with('success', 'Verification email has been sent to your email address.');
+        return back()->with('success', 'A new verification email has been sent to ' . $request->user()->email . '. Please check your inbox.');
     }
 }

@@ -31,27 +31,39 @@ class DashboardController extends Controller
     public function updateAccount(Request $request)
     {
         $user = Auth::user();
+        $updateType = $request->input('update_type', 'profile');
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'current_password' => 'nullable|required_with:password',
-            'password' => 'nullable|string|min:8|confirmed',
-        ]);
+        if ($updateType === 'password') {
+            // Password change
+            $validated = $request->validate([
+                'current_password' => 'required',
+                'password' => 'required|string|min:8|confirmed',
+            ]);
 
-        $user->name = $validated['name'];
-        $user->email = $validated['email'];
-
-        if ($request->filled('password')) {
             if (!Hash::check($validated['current_password'], $user->password)) {
-                return redirect()->back()->withErrors(['current_password' => 'Current password is incorrect.']);
+                return redirect()->back()->withErrors(['current_password' => 'Current password is incorrect.'])->withInput();
             }
+
             $user->password = Hash::make($validated['password']);
+            $user->save();
+
+            return redirect()->route('dashboard', ['tab' => 'account'])
+                ->with('success', 'Password changed successfully.');
+        } else {
+            // Profile update
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+                'phone' => 'nullable|string|max:20',
+            ]);
+
+            $user->name = $validated['name'];
+            $user->email = $validated['email'];
+            $user->phone = $validated['phone'] ?? null;
+            $user->save();
+
+            return redirect()->route('dashboard', ['tab' => 'account'])
+                ->with('success', 'Profile updated successfully.');
         }
-
-        $user->save();
-
-        return redirect()->route('dashboard', ['tab' => 'account'])
-            ->with('success', 'Account updated successfully.');
     }
 }

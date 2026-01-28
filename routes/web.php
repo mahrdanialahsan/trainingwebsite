@@ -62,14 +62,16 @@ Route::get('/courses/{slug}', [CourseController::class, 'show'])->name('courses.
 Route::get('/consulting', [ConsultingController::class, 'index'])->name('consulting');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 
-// Booking Routes
-Route::get('/book/{slug}', [BookingController::class, 'create'])->name('bookings.create');
-Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
-Route::get('/bookings/{booking}/waiver', [BookingController::class, 'showWaiver'])->name('bookings.waiver');
-Route::post('/bookings/{booking}/accept-waiver', [BookingController::class, 'acceptWaiver'])->name('bookings.accept-waiver');
-Route::get('/bookings/{booking}/payment', [BookingController::class, 'showPayment'])->name('bookings.payment');
-Route::post('/bookings/{booking}/payment', [BookingController::class, 'processPayment'])->name('bookings.process-payment');
-Route::get('/bookings/{booking}/confirmation', [BookingController::class, 'confirmation'])->name('bookings.confirmation');
+// Booking Routes (Authentication Required)
+Route::middleware('auth')->group(function () {
+    Route::get('/book/{slug}', [BookingController::class, 'create'])->name('bookings.create');
+    Route::post('/bookings/{slug}', [BookingController::class, 'store'])->name('bookings.store');
+    Route::get('/bookings/{booking}/waiver', [BookingController::class, 'showWaiver'])->name('bookings.waiver');
+    Route::post('/bookings/{booking}/accept-waiver', [BookingController::class, 'acceptWaiver'])->name('bookings.accept-waiver');
+    Route::get('/bookings/{booking}/payment', [BookingController::class, 'showPayment'])->name('bookings.payment');
+    Route::post('/bookings/{booking}/payment', [BookingController::class, 'processPayment'])->name('bookings.process-payment');
+    Route::get('/bookings/{booking}/confirmation', [BookingController::class, 'confirmation'])->name('bookings.confirmation');
+});
 
 // Webhooks
 Route::post('/webhooks/stripe', [\App\Http\Controllers\WebhookController::class, 'stripe'])->name('webhooks.stripe');

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class Booking extends Model
 {
@@ -20,7 +21,33 @@ class Booking extends Model
         'waiver_accepted',
         'payment_completed',
         'notes',
+        'uid',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($booking) {
+            if (empty($booking->uid)) {
+                $booking->uid = static::generateUniqueUid();
+            }
+        });
+    }
+
+    protected static function generateUniqueUid(): string
+    {
+        do {
+            $uid = strtoupper(Str::random(8));
+        } while (static::where('uid', $uid)->exists());
+
+        return $uid;
+    }
+
+    public function getRouteKeyName()
+    {
+        return 'uid';
+    }
 
     protected function casts(): array
     {

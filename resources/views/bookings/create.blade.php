@@ -15,7 +15,7 @@
                     <label for="first_name" class="block text-sm font-medium text-gray-700 mb-2">First Name *</label>
                     <input type="text" name="first_name" id="first_name" required
                            class="w-full px-3 py-2 border border-gray-300 rounded-none focus:outline-none focus:ring-2 focus:ring-brand-primary"
-                           value="{{ old('first_name') }}">
+                           value="{{ old('first_name', auth()->check() ? explode(' ', auth()->user()->name)[0] ?? '' : '') }}">
                     @error('first_name')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
@@ -25,7 +25,7 @@
                     <label for="last_name" class="block text-sm font-medium text-gray-700 mb-2">Last Name *</label>
                     <input type="text" name="last_name" id="last_name" required
                            class="w-full px-3 py-2 border border-gray-300 rounded-none focus:outline-none focus:ring-2 focus:ring-brand-primary"
-                           value="{{ old('last_name') }}">
+                           value="{{ old('last_name', auth()->check() ? (count(explode(' ', auth()->user()->name)) > 1 ? implode(' ', array_slice(explode(' ', auth()->user()->name), 1)) : '') : '') }}">
                     @error('last_name')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
@@ -36,7 +36,7 @@
                 <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email *</label>
                 <input type="email" name="email" id="email" required
                        class="w-full px-3 py-2 border border-gray-300 rounded-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-                       value="{{ old('email') }}">
+                       value="{{ old('email', auth()->check() ? auth()->user()->email : '') }}">
                 @error('email')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
@@ -46,7 +46,7 @@
                 <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">Phone</label>
                 <input type="tel" name="phone" id="phone"
                        class="w-full px-3 py-2 border border-gray-300 rounded-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-                       value="{{ old('phone') }}">
+                       value="{{ old('phone', auth()->check() ? auth()->user()->phone : '') }}">
                 @error('phone')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror

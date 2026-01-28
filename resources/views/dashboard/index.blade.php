@@ -136,69 +136,199 @@
     @if($tab === 'account')
     <div>
         <h2 class="text-2xl font-bold text-brand-primary mb-6">My Account</h2>
-        <div class="bg-white rounded-none shadow-md p-8">
-            @if(session('success'))
-                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-none mb-6">
-                    {{ session('success') }}
-                </div>
-            @endif
+        
+        @if(session('success'))
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-none mb-6">
+                {{ session('success') }}
+            </div>
+        @endif
 
-            <form method="POST" action="{{ route('dashboard.account.update') }}">
-                @csrf
-                @method('PUT')
+        @if(session('error'))
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-none mb-6">
+                {{ session('error') }}
+            </div>
+        @endif
 
-                <div class="mb-6">
-                    <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-                    <input type="text" name="name" id="name" required
-                           class="w-full px-3 py-2 border border-gray-300 rounded-none focus:outline-none focus:ring-2 focus:ring-brand-primary"
-                           value="{{ old('name', $user->name) }}">
-                    @error('name')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div class="mb-6">
-                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                    <input type="email" name="email" id="email" required
-                           class="w-full px-3 py-2 border border-gray-300 rounded-none focus:outline-none focus:ring-2 focus:ring-brand-primary"
-                           value="{{ old('email', $user->email) }}">
-                    @error('email')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div class="mb-6">
-                    <h3 class="text-lg font-semibold text-brand-primary mb-4">Change Password (Optional)</h3>
-                    <div class="mb-4">
-                        <label for="current_password" class="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
-                        <input type="password" name="current_password" id="current_password"
-                               class="w-full px-3 py-2 border border-gray-300 rounded-none focus:outline-none focus:ring-2 focus:ring-brand-primary">
-                        @error('current_password')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-                    <div class="mb-4">
-                        <label for="password" class="block text-sm font-medium text-gray-700 mb-2">New Password</label>
-                        <input type="password" name="password" id="password"
-                               class="w-full px-3 py-2 border border-gray-300 rounded-none focus:outline-none focus:ring-2 focus:ring-brand-primary">
-                        <p class="text-xs text-gray-500 mt-1">Leave blank to keep current password</p>
-                        @error('password')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-                    <div>
-                        <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-2">Confirm New Password</label>
-                        <input type="password" name="password_confirmation" id="password_confirmation"
-                               class="w-full px-3 py-2 border border-gray-300 rounded-none focus:outline-none focus:ring-2 focus:ring-brand-primary">
-                    </div>
-                </div>
-
-                <button type="submit" class="bg-brand-primary text-white px-6 py-2 rounded-none hover:bg-brand-dark font-semibold">
-                    Update Account
+        <!-- Personal Information Table -->
+        <div class="bg-white rounded-none shadow-md p-8 mb-6">
+            <h3 class="text-xl font-semibold text-brand-primary mb-6">Personal Information</h3>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 w-1/3">Full Name</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700" id="display-name">{{ $user->name }}</td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Email</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700" id="display-email">{{ $user->email }}</td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Phone Number</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700" id="display-phone">{{ $user->phone ?? 'Not provided' }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="mt-6 flex space-x-4">
+                <button type="button" onclick="openProfileEdit()" class="bg-brand-primary text-white px-6 py-2 rounded-none hover:bg-brand-dark font-semibold">
+                    Edit Profile
                 </button>
-            </form>
+                <button type="button" onclick="openPasswordChange()" class="bg-gray-600 text-white px-6 py-2 rounded-none hover:bg-gray-700 font-semibold">
+                    Change Password
+                </button>
+            </div>
+        </div>
+
+        <!-- Profile Edit Modal -->
+        <div id="profile-edit-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+            <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-none bg-white">
+                <div class="mt-3">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold text-brand-primary">Edit Profile</h3>
+                        <button onclick="closeProfileEdit()" class="text-gray-400 hover:text-gray-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <form method="POST" action="{{ route('dashboard.account.update') }}" id="profile-edit-form">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="update_type" value="profile">
+
+                        <div class="mb-4">
+                            <label for="edit_name" class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                            <input type="text" name="name" id="edit_name" required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-none focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                                   value="{{ old('name', $user->name) }}">
+                            @error('name')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="edit_email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                            <input type="email" name="email" id="edit_email" required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-none focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                                   value="{{ old('email', $user->email) }}">
+                            @error('email')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="edit_phone" class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                            <input type="tel" name="phone" id="edit_phone"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-none focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                                   value="{{ old('phone', $user->phone) }}">
+                            @error('phone')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="flex justify-end space-x-3">
+                            <button type="button" onclick="closeProfileEdit()" class="px-4 py-2 border border-gray-300 rounded-none text-gray-700 hover:bg-gray-50">
+                                Cancel
+                            </button>
+                            <button type="submit" class="bg-brand-primary text-white px-6 py-2 rounded-none hover:bg-brand-dark font-semibold">
+                                Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Password Change Modal -->
+        <div id="password-change-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+            <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-none bg-white">
+                <div class="mt-3">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold text-brand-primary">Change Password</h3>
+                        <button onclick="closePasswordChange()" class="text-gray-400 hover:text-gray-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <form method="POST" action="{{ route('dashboard.account.update') }}" id="password-change-form">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="update_type" value="password">
+
+                        <div class="mb-4">
+                            <label for="current_password" class="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
+                            <input type="password" name="current_password" id="current_password" required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-none focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                            @error('current_password')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="new_password" class="block text-sm font-medium text-gray-700 mb-2">New Password</label>
+                            <input type="password" name="password" id="new_password" required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-none focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                            <p class="text-xs text-gray-500 mt-1">Must be at least 8 characters</p>
+                            @error('password')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-2">Confirm New Password</label>
+                            <input type="password" name="password_confirmation" id="password_confirmation" required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-none focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                        </div>
+
+                        <div class="flex justify-end space-x-3">
+                            <button type="button" onclick="closePasswordChange()" class="px-4 py-2 border border-gray-300 rounded-none text-gray-700 hover:bg-gray-50">
+                                Cancel
+                            </button>
+                            <button type="submit" class="bg-gray-600 text-white px-6 py-2 rounded-none hover:bg-gray-700 font-semibold">
+                                Change Password
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
     @endif
+
+<script>
+function openProfileEdit() {
+    document.getElementById('profile-edit-modal').classList.remove('hidden');
+}
+
+function closeProfileEdit() {
+    document.getElementById('profile-edit-modal').classList.add('hidden');
+}
+
+function openPasswordChange() {
+    document.getElementById('password-change-modal').classList.remove('hidden');
+}
+
+function closePasswordChange() {
+    document.getElementById('password-change-modal').classList.add('hidden');
+}
+
+// Close modals when clicking outside
+window.onclick = function(event) {
+    const profileModal = document.getElementById('profile-edit-modal');
+    const passwordModal = document.getElementById('password-change-modal');
+    
+    if (event.target == profileModal) {
+        closeProfileEdit();
+    }
+    if (event.target == passwordModal) {
+        closePasswordChange();
+    }
+}
+</script>
 </div>
 @endsection

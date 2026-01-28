@@ -26,9 +26,9 @@
         @if($stripePublicKey)
         <div class="mb-6">
             <h2 class="text-2xl font-semibold mb-4">Pay with Credit/Debit Card</h2>
-            <p class="text-gray-600 mb-4">Secure payment powered by Stripe</p>
+            <p class="text-gray-600 mb-4">Secure payment</p>
             <button id="checkout-button" class="w-full bg-brand-primary text-white px-6 py-3 rounded-none hover:bg-brand-dark text-lg font-semibold transition">
-                Pay ${{ number_format($booking->course->price, 2) }} with Stripe
+                Pay ${{ number_format($booking->course->price, 2) }}
             </button>
         </div>
         @else

@@ -1,0 +1,82 @@
+@import 'tailwindcss';
+
+/* Turbo Transitions - React-like smooth page transitions */
+[turbo-frame] {
+    opacity: 1;
+    transition: opacity 0.2s ease-in-out;
+}
+
+turbo-frame[busy] {
+    opacity: 0.6;
+}
+
+/* Smooth page transitions */
+body {
+    transition: opacity 0.15s ease-in-out;
+}
+
+body.turbo-loading {
+    opacity: 0.9;
+}
+
+/* Loading spinner animation */
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+/* Turbo frame loading state */
+turbo-frame[loading] {
+    position: relative;
+}
+
+turbo-frame[loading]::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(to right, transparent, var(--brand-primary), transparent);
+    animation: loading 1s linear infinite;
+}
+
+@keyframes loading {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* Flash message animations */
+[data-turbo-temporary] {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Form loading states */
+form[data-controller="loader"] button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Smooth scroll for Turbo navigation */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Preserve scroll position for Turbo frames */
+turbo-frame {
+    scroll-behavior: smooth;
+}

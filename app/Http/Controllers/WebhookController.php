@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Booking;
 use App\Models\Payment;
 use App\Models\Setting;
+use App\Mail\BookingConfirmationMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Stripe\Stripe;
 use Stripe\Webhook;
 use Stripe\Exception\SignatureVerificationException;
@@ -83,6 +85,21 @@ class WebhookController extends Controller
                 'status' => 'confirmed',
             ]);
         });
+
+        // Send confirmation email
+        try {
+            $booking->refresh();
+            $booking->load(['course', 'payment']);
+            Mail::to($booking->email)->send(new BookingConfirmationMail($booking));
+        } catch (\Exception $e) {
+            // Log error but don't fail the webhook
+            // Note: Webhook errors won't show on UI since it's server-to-server
+            \Log::error('Failed to send booking confirmation email via webhook: ' . $e->getMessage(), [
+                'booking_id' => $booking->id,
+                'email' => $booking->email,
+                'exception' => $e
+            ]);
+        }
     }
 
     private function handlePaymentIntentSucceeded($paymentIntent)

@@ -8,8 +8,10 @@ use App\Models\Payment;
 use App\Models\Setting;
 use App\Models\Waiver;
 use App\Models\WaiverAcceptance;
+use App\Mail\BookingConfirmationMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Stripe\Stripe;
 use Stripe\Checkout\Session;
@@ -189,7 +191,27 @@ class BookingController extends Controller
                         ]);
                     });
 
-                    return redirect()->route('bookings.confirmation', $booking);
+                    // Send confirmation email
+                    $emailSent = false;
+                    $emailError = null;
+                    try {
+                        $booking->refresh();
+                        $booking->load(['course', 'payment']);
+                        Mail::to($booking->email)->send(new BookingConfirmationMail($booking));
+                        $emailSent = true;
+                    } catch (\Exception $e) {
+                        // Log error and store for UI display
+                        $emailError = 'Failed to send confirmation email: ' . $e->getMessage();
+                        \Log::error('Failed to send booking confirmation email: ' . $e->getMessage(), [
+                            'booking_id' => $booking->id,
+                            'email' => $booking->email,
+                            'exception' => $e
+                        ]);
+                    }
+
+                    return redirect()->route('bookings.confirmation', $booking)
+                        ->with('email_sent', $emailSent)
+                        ->with('email_error', $emailError);
                 }
             } catch (\Exception $e) {
                 return redirect()->route('bookings.payment', $booking)
@@ -214,6 +236,8 @@ class BookingController extends Controller
                     $session = Session::retrieve($sessionId);
 
                     if ($session->payment_status === 'paid' && $session->metadata->booking_id == $booking->id) {
+                        $wasPaymentCompleted = $booking->payment_completed;
+                        
                         DB::transaction(function () use ($booking, $session) {
                             Payment::updateOrCreate(
                                 [
@@ -235,6 +259,33 @@ class BookingController extends Controller
                                 'status' => 'confirmed',
                             ]);
                         });
+
+                        // Send confirmation email only if payment was just completed
+                        if (!$wasPaymentCompleted) {
+                            $emailSent = false;
+                            $emailError = null;
+                            try {
+                                $booking->refresh();
+                                $booking->load(['course', 'payment']);
+                                Mail::to($booking->email)->send(new BookingConfirmationMail($booking));
+                                $emailSent = true;
+                            } catch (\Exception $e) {
+                                // Log error and store for UI display
+                                $emailError = 'Failed to send confirmation email: ' . $e->getMessage();
+                                \Log::error('Failed to send booking confirmation email: ' . $e->getMessage(), [
+                                    'booking_id' => $booking->id,
+                                    'email' => $booking->email,
+                                    'exception' => $e
+                                ]);
+                            }
+                            
+                            // Store email status in session for display
+                            if ($emailError) {
+                                session()->flash('email_error', $emailError);
+                            } else {
+                                session()->flash('email_sent', true);
+                            }
+                        }
                     }
                 } catch (\Exception $e) {
                     // Log error but continue

@@ -35,12 +35,14 @@ class UserController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
+            'phone' => 'nullable|string|max:20',
             'password' => 'required|string|min:8|confirmed',
             'is_active' => 'boolean',
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
         $validated['is_active'] = $request->has('is_active') ? true : false;
+        $validated['phone'] = $validated['phone'] ?? null;
 
         $user = User::create($validated);
 
@@ -78,6 +80,7 @@ class UserController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
+            'phone' => 'nullable|string|max:20',
             'password' => 'nullable|string|min:8|confirmed',
             'is_active' => 'boolean',
         ]);
@@ -89,6 +92,7 @@ class UserController extends Controller
         }
 
         $validated['is_active'] = $request->has('is_active') ? true : false;
+        $validated['phone'] = $validated['phone'] ?? null;
 
         $user->update($validated);
 

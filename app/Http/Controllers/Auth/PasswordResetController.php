@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Mail\PasswordResetMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
@@ -41,12 +42,20 @@ class PasswordResetController extends Controller
             ]
         );
 
-        // Send email (you can customize this)
+        // Generate reset link
         $resetLink = url('/reset-password/' . $token . '?email=' . urlencode($request->email));
         
-        // For now, we'll just redirect with a message
-        // In production, you should send an actual email
-        return back()->with('status', 'Password reset link has been sent to your email address.');
+        // Send password reset email
+        try {
+            Mail::to($user->email)->send(new PasswordResetMail($user, $resetLink));
+            
+            return back()->with('status', 'Password reset link has been sent to your email address.');
+        } catch (\Exception $e) {
+            // Log the error
+            \Log::error('Password reset email failed: ' . $e->getMessage());
+            
+            return back()->withErrors(['email' => 'Failed to send password reset email. Please try again later.']);
+        }
     }
 
     public function showResetPasswordForm(Request $request, $token)

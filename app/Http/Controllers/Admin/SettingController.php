@@ -19,6 +19,7 @@ class SettingController extends Controller
         $tagline = Setting::get('tagline', 'Professional training and consulting services.');
         $systemEmail = Setting::get('system_email', 'info@training.com');
         $phoneNumber = Setting::get('phone_number', '(555) 123-4567');
+        $contactEmail = Setting::get('contact_email', $systemEmail);
         
         // Social Media Links
         $socialFacebook = Setting::get('social_facebook', '');
@@ -29,7 +30,7 @@ class SettingController extends Controller
         
         return view('admin.settings.index', compact(
             'stripePublicKey', 'stripeSecretKey', 'stripeWebhookSecret',
-            'tagline', 'systemEmail', 'phoneNumber',
+            'tagline', 'systemEmail', 'phoneNumber', 'contactEmail',
             'socialFacebook', 'socialInstagram', 'socialYoutube', 'socialTwitter', 'socialLinkedin'
         ));
     }
@@ -45,6 +46,7 @@ class SettingController extends Controller
             'tagline' => 'nullable|string|max:255',
             'system_email' => 'nullable|email|max:255',
             'phone_number' => 'nullable|string|max:255',
+            'contact_email' => 'nullable|email|max:255',
             // Social Media Links
             'social_facebook' => 'nullable|url|max:255',
             'social_instagram' => 'nullable|url|max:255',
@@ -62,6 +64,7 @@ class SettingController extends Controller
         Setting::set('tagline', $validated['tagline'] ?? '', 'text', 'Company Tagline');
         Setting::set('system_email', $validated['system_email'] ?? '', 'email', 'System Email Address');
         Setting::set('phone_number', $validated['phone_number'] ?? '', 'text', 'Phone Number');
+        Setting::set('contact_email', $validated['contact_email'] ?? '', 'email', 'Contact Form Email Address');
         
         // Social Media Links
         Setting::set('social_facebook', $validated['social_facebook'] ?? '', 'url', 'Facebook Page URL');

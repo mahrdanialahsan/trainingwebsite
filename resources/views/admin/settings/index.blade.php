@@ -49,6 +49,18 @@
                 @enderror
                 <p class="text-sm text-gray-500 mt-1">Phone number displayed in the footer and contact page</p>
             </div>
+
+            <div class="mb-6">
+                <label for="contact_email" class="block text-sm font-medium text-gray-700 mb-2">Contact Form Email</label>
+                <input type="email" name="contact_email" id="contact_email"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-none focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                       value="{{ old('contact_email', $contactEmail) }}"
+                       placeholder="contact@training.com">
+                @error('contact_email')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
+                <p class="text-sm text-gray-500 mt-1">Email address where contact form submissions will be sent. If not set, system email will be used.</p>
+            </div>
         </div>
 
         <!-- Social Media Links -->

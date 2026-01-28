@@ -24,6 +24,7 @@ use App\Http\Controllers\Admin\FaqController as AdminFaqController;
 use App\Http\Controllers\Admin\ConsultingSectionController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\SubscriberController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\ContactController;
 
@@ -53,6 +54,7 @@ Route::middleware('auth')->group(function () {
 
 // Frontend Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::post('/subscribe', [HomeController::class, 'subscribe'])->name('subscribe');
 Route::get('/about', [AboutController::class, 'index'])->name('about');
 Route::get('/faqs', [FaqController::class, 'index'])->name('faqs.index');
 Route::get('/trainings', [TrainingController::class, 'index'])->name('trainings.index');
@@ -60,7 +62,9 @@ Route::get('/trainings/{slug}', [TrainingController::class, 'show'])->name('trai
 Route::get('/courses', [CourseController::class, 'index'])->name('courses');
 Route::get('/courses/{slug}', [CourseController::class, 'show'])->name('courses.show');
 Route::get('/consulting', [ConsultingController::class, 'index'])->name('consulting');
+Route::post('/consulting/request', [ConsultingController::class, 'store'])->name('consulting.request');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
+Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
 // Booking Routes (Authentication Required)
 Route::middleware('auth')->group(function () {
@@ -135,6 +139,10 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::resource('users', UserController::class);
     Route::put('users/{user}/toggle-active', [UserController::class, 'toggleActive'])->name('users.toggle-active');
     Route::put('users/{user}/verify', [UserController::class, 'verify'])->name('users.verify');
+    
+    // Subscribers Management
+    Route::resource('subscribers', SubscriberController::class);
+    Route::put('subscribers/{subscriber}/toggle-active', [SubscriberController::class, 'toggleActive'])->name('subscribers.toggle-active');
     
     // Admins Management (Super Admin only)
     Route::middleware('super_admin')->group(function () {

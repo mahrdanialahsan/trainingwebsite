@@ -171,11 +171,11 @@
                 </table>
             </div>
             
-            <div class="mt-6 flex space-x-4">
-                <button type="button" onclick="openProfileEdit()" class="bg-brand-primary text-white px-6 py-2 rounded-none hover:bg-brand-dark font-semibold">
+            <div class="mt-6 flex flex-wrap gap-4">
+                <button type="button" onclick="openProfileEdit()" class="bg-brand-primary text-white px-6 py-2 rounded-none hover:bg-brand-dark font-semibold transition">
                     Edit Profile
                 </button>
-                <button type="button" onclick="openPasswordChange()" class="bg-gray-600 text-white px-6 py-2 rounded-none hover:bg-gray-700 font-semibold">
+                <button type="button" onclick="openPasswordChange()" class="bg-gray-600 text-white px-6 py-2 rounded-none hover:bg-gray-700 font-semibold transition">
                     Change Password
                 </button>
             </div>

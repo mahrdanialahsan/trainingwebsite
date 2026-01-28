@@ -156,13 +156,15 @@
                 </div>
                 <div>
                     <h3 class="text-lg font-semibold mb-4 text-white">Subscribe & Follow</h3>
-                    <form class="mb-4" method="POST" action="#" id="subscribe-form">
+                    <div id="subscribe-message" class="mb-2 text-sm"></div>
+                    <form class="mb-4" method="POST" action="{{ route('subscribe') }}" id="subscribe-form">
                         @csrf
                         <div class="flex flex-col sm:flex-row gap-2">
-                            <input type="email" name="email" placeholder="Enter your email" required
+                            <input type="email" name="email" id="subscribe-email" placeholder="Enter your email" required
                                    class="flex-1 px-3 py-2 bg-white text-gray-900 rounded-none focus:outline-none focus:ring-2 focus:ring-white text-sm">
-                            <button type="submit" class="bg-brand-dark text-white px-4 py-2 rounded-none hover:bg-gray-800 font-semibold transition text-sm whitespace-nowrap">
-                                Subscribe
+                            <button type="submit" id="subscribe-button" class="bg-brand-dark text-white px-4 py-2 rounded-none hover:bg-gray-800 font-semibold transition text-sm whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed">
+                                <span id="subscribe-button-text">Subscribe</span>
+                                <span id="subscribe-button-loading" class="hidden">Subscribing...</span>
                             </button>
                         </div>
                     </form>
@@ -212,5 +214,72 @@
     </footer>
 
     @stack('scripts')
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const subscribeForm = document.getElementById('subscribe-form');
+        if (subscribeForm) {
+            const messageContainer = document.getElementById('subscribe-message');
+            const submitButton = document.getElementById('subscribe-button');
+            const submitText = document.getElementById('subscribe-button-text');
+            const submitLoading = document.getElementById('subscribe-button-loading');
+            const emailInput = document.getElementById('subscribe-email');
+
+            subscribeForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                messageContainer.innerHTML = '';
+                messageContainer.className = 'mb-2 text-sm';
+                
+                submitButton.disabled = true;
+                submitText.classList.add('hidden');
+                submitLoading.classList.remove('hidden');
+
+                const formData = new FormData(subscribeForm);
+                const data = Object.fromEntries(formData);
+
+                fetch(subscribeForm.action, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('input[name="_token"]')?.value || 
+                                       document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => {
+                    return response.json().then(data => {
+                        return { status: response.status, data: data };
+                    }).catch(() => {
+                        return { status: response.status, data: { success: false, message: 'An error occurred. Please try again.' } };
+                    });
+                })
+                .then(({ status, data }) => {
+                    submitButton.disabled = false;
+                    submitText.classList.remove('hidden');
+                    submitLoading.classList.add('hidden');
+
+                    if (data.success) {
+                        messageContainer.className = 'mb-2 text-sm text-green-300';
+                        messageContainer.innerHTML = '<span class="flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>' + data.message + '</span>';
+                        emailInput.value = '';
+                    } else {
+                        messageContainer.className = 'mb-2 text-sm text-red-300';
+                        messageContainer.innerHTML = '<span class="flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>' + (data.message || 'An error occurred. Please try again.') + '</span>';
+                    }
+                })
+                .catch(error => {
+                    submitButton.disabled = false;
+                    submitText.classList.remove('hidden');
+                    submitLoading.classList.add('hidden');
+                    messageContainer.className = 'mb-2 text-sm text-red-300';
+                    messageContainer.innerHTML = '<span class="flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>An error occurred. Please try again.</span>';
+                });
+            });
+        }
+    });
+    </script>
 </body>
 </html>

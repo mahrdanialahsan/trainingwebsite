@@ -31,19 +31,21 @@
         .text-brand-secondary { color: var(--brand-secondary); }
         .border-brand-primary { border-color: var(--brand-primary); }
         .hover\:bg-brand-dark:hover { background-color: var(--brand-dark); }
+        .js-mobile-close-icon { display: none; }
+        .mobile-nav-open .js-mobile-menu-icon { display: none; }
+        .mobile-nav-open .js-mobile-close-icon { display: block; }
     </style>
     @stack('styles')
 </head>
 <body class="bg-gray-50">
-    <nav class="bg-white shadow-sm border-b border-gray-200">
+    <nav class="bg-white shadow-sm border-b border-gray-200 relative" data-controller="mobile-nav">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
-                <div class="flex items-center">
-                    <a href="{{ route('home') }}" class="flex items-center">
-                        <img src="{{ asset('Logo.png') }}" alt="Texas Training Group" class="h-12 md:h-16 w-auto">
-                    </a>
-                </div>
-                <div class="flex items-center space-x-6">
+                <a href="{{ route('home') }}" class="flex items-center">
+                    <img src="{{ asset('Logo.png') }}" alt="Texas Training Group" class="h-12 md:h-16 w-auto">
+                </a>
+                {{-- Desktop menu --}}
+                <div class="hidden lg:flex items-center space-x-6">
                     <a href="{{ route('home') }}" class="text-brand-primary font-medium hover:text-brand-dark transition" data-turbo-action="advance">Home</a>
                     <a href="{{ route('about') }}" class="text-brand-primary font-medium hover:text-brand-dark transition" data-turbo-action="advance">About</a>
                     <div class="relative group">
@@ -77,7 +79,6 @@
                     <a href="{{ route('consulting') }}" class="text-brand-primary font-medium hover:text-brand-dark transition" data-turbo-action="advance">Consulting</a>
                     <a href="{{ route('faqs.index') }}" class="text-brand-primary font-medium hover:text-brand-dark transition" data-turbo-action="advance">FAQs</a>
                     <a href="{{ route('contact') }}" class="text-brand-primary font-medium hover:text-brand-dark transition" data-turbo-action="advance">Contact</a>
-                    
                     @auth
                     <div class="relative group">
                         <a href="{{ route('dashboard') }}" class="text-brand-primary font-medium hover:text-brand-dark transition flex items-center">
@@ -109,6 +110,50 @@
                     <a href="{{ route('register') }}" class="bg-brand-primary text-white px-4 py-2 rounded-none hover:bg-brand-dark transition" data-turbo-action="advance">Sign Up</a>
                     @endauth
                 </div>
+                {{-- Mobile menu button --}}
+                <button type="button" id="mobile-menu-btn" class="lg:hidden p-2 -mr-2 text-brand-primary hover:text-brand-dark transition" data-action="click->mobile-nav#toggle" aria-label="Toggle menu">
+                    <span class="js-mobile-menu-icon" aria-hidden="true">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    </span>
+                    <span class="js-mobile-close-icon" aria-hidden="true">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </span>
+                </button>
+            </div>
+        </div>
+        {{-- Mobile menu panel (full height below header) --}}
+        <div id="mobile-menu-panel" data-mobile-nav-target="panel" class="hidden lg:hidden fixed top-20 left-0 right-0 bottom-0 bg-white border-t border-gray-200 shadow-lg z-40 overflow-y-auto">
+            <div class="px-4 py-6 space-y-1 min-h-full">
+                <a href="{{ route('home') }}" class="block py-2 text-brand-primary font-medium hover:text-brand-dark transition" data-turbo-action="advance" data-action="click->mobile-nav#close">Home</a>
+                <a href="{{ route('about') }}" class="block py-2 text-brand-primary font-medium hover:text-brand-dark transition" data-turbo-action="advance" data-action="click->mobile-nav#close">About</a>
+                <a href="{{ route('trainings.index') }}" class="block py-2 text-brand-primary font-medium hover:text-brand-dark transition" data-turbo-action="advance" data-action="click->mobile-nav#close">Training</a>
+                @php $trainings = \App\Models\Training::where('is_active', true)->orderBy('order')->get(); @endphp
+                @if($trainings->count() > 0)
+                    @foreach($trainings as $training)
+                        <a href="{{ route('trainings.show', $training->slug) }}" class="block py-2 pl-4 text-sm text-brand-secondary hover:text-brand-dark transition" data-turbo-action="advance" data-action="click->mobile-nav#close">{{ $training->title }}</a>
+                    @endforeach
+                @endif
+                <a href="{{ route('courses') }}" class="block py-2 text-brand-primary font-medium hover:text-brand-dark transition" data-turbo-action="advance" data-action="click->mobile-nav#close">Courses</a>
+                <a href="{{ route('consulting') }}" class="block py-2 text-brand-primary font-medium hover:text-brand-dark transition" data-turbo-action="advance" data-action="click->mobile-nav#close">Consulting</a>
+                <a href="{{ route('faqs.index') }}" class="block py-2 text-brand-primary font-medium hover:text-brand-dark transition" data-turbo-action="advance" data-action="click->mobile-nav#close">FAQs</a>
+                <a href="{{ route('contact') }}" class="block py-2 text-brand-primary font-medium hover:text-brand-dark transition" data-turbo-action="advance" data-action="click->mobile-nav#close">Contact</a>
+                @auth
+                <div class="border-t border-gray-200 pt-3 mt-3 space-y-1">
+                    <a href="{{ route('dashboard') }}" class="block py-2 text-brand-primary font-medium hover:text-brand-dark transition" data-turbo-action="advance" data-action="click->mobile-nav#close">Dashboard</a>
+                    <a href="{{ route('dashboard', ['tab' => 'bookings']) }}" class="block py-2 text-sm text-brand-secondary hover:text-brand-dark transition" data-turbo-action="advance" data-action="click->mobile-nav#close">My Bookings</a>
+                    <a href="{{ route('dashboard', ['tab' => 'orders']) }}" class="block py-2 text-sm text-brand-secondary hover:text-brand-dark transition" data-turbo-action="advance" data-action="click->mobile-nav#close">Orders</a>
+                    <a href="{{ route('dashboard', ['tab' => 'account']) }}" class="block py-2 text-sm text-brand-secondary hover:text-brand-dark transition" data-turbo-action="advance" data-action="click->mobile-nav#close">My Account</a>
+                    <form method="POST" action="{{ route('logout') }}" class="pt-2" data-turbo="false" data-action="submit->mobile-nav#close">
+                        @csrf
+                        <button type="submit" class="block w-full text-left py-2 text-sm text-brand-secondary hover:text-brand-dark transition">Logout</button>
+                    </form>
+                </div>
+                @else
+                <div class="border-t border-gray-200 pt-3 mt-3 flex flex-col gap-2">
+                    <a href="{{ route('login') }}" class="block py-2 text-brand-primary font-medium hover:text-brand-dark transition text-center" data-turbo-action="advance" data-action="click->mobile-nav#close">Sign In</a>
+                    <a href="{{ route('register') }}" class="block py-2 bg-brand-primary text-white text-center font-medium hover:bg-brand-dark transition" data-turbo-action="advance" data-action="click->mobile-nav#close">Sign Up</a>
+                </div>
+                @endauth
             </div>
         </div>
     </nav>
@@ -280,6 +325,31 @@
             });
         }
     });
+
+    // Mobile menu toggle (works with or without Stimulus / Vite)
+    function initMobileMenu() {
+        var panel = document.getElementById('mobile-menu-panel');
+        var nav = panel && panel.closest('nav');
+        var btn = document.getElementById('mobile-menu-btn');
+        if (!btn || !panel || !nav || nav.dataset.mobileMenuInited) return;
+        nav.dataset.mobileMenuInited = 'true';
+        btn.addEventListener('click', function() {
+            panel.classList.toggle('hidden');
+            nav.classList.toggle('mobile-nav-open', !panel.classList.contains('hidden'));
+        });
+        panel.querySelectorAll('a, button').forEach(function(el) {
+            el.addEventListener('click', function() {
+                panel.classList.add('hidden');
+                nav.classList.remove('mobile-nav-open');
+            });
+        });
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initMobileMenu);
+    } else {
+        initMobileMenu();
+    }
+    document.addEventListener('turbo:load', initMobileMenu);
     </script>
 </body>
 </html>

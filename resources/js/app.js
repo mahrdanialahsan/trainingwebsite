@@ -10,6 +10,7 @@ import DropdownController from './controllers/dropdown_controller';
 import ModalController from './controllers/modal_controller';
 import TabsController from './controllers/tabs_controller';
 import ToggleController from './controllers/toggle_controller';
+import MobileNavController from './controllers/mobile_nav_controller';
 import LoaderController from './controllers/loader_controller';
 import AutosubmitController from './controllers/autosubmit_controller';
 
@@ -17,6 +18,7 @@ application.register('dropdown', DropdownController);
 application.register('modal', ModalController);
 application.register('tabs', TabsController);
 application.register('toggle', ToggleController);
+application.register('mobile-nav', MobileNavController);
 application.register('loader', LoaderController);
 application.register('autosubmit', AutosubmitController);
 

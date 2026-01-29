@@ -4,7 +4,7 @@
 
 @section('content')
 <!-- Hero Section - Full Width -->
-<div class="relative bg-brand-primary text-white py-32 md:py-40 overflow-hidden" style="width: 100vw; margin-left: calc(-50vw + 50%); margin-right: calc(-50vw + 50%); background-image: url('{{ asset('images/cover.png') }}'); background-size: cover; background-position: center center; background-repeat: no-repeat; min-height: 80vh;">
+<div class="relative w-full bg-brand-primary text-white py-32 md:py-40 overflow-hidden min-h-[80vh]" style="background-image: url('{{ asset('images/cover.png') }}'); background-size: cover; background-position: center center; background-repeat: no-repeat;">
     <!-- Dark Overlay for Text Readability -->
     <div class="absolute inset-0 bg-brand-primary" style="opacity: 0.5;"></div>
     
@@ -118,19 +118,19 @@
                             ${{ number_format($course->price, 2) }}
                         </div>
                     </div>
-                    <div class="flex space-x-2">
+                    <div class="flex gap-3">
                         @if($course->slug)
-                        <a href="{{ route('courses.show', $course->slug) }}" class="flex-1 text-center bg-gray-100 text-brand-primary px-4 py-2 rounded-none hover:bg-gray-200 transition font-medium">
+                        <a href="{{ route('courses.show', $course->slug) }}" class="flex-1 min-w-0 text-center whitespace-nowrap bg-gray-100 text-brand-primary px-4 py-3 rounded-none border border-gray-200 hover:bg-gray-200 hover:border-gray-300 transition font-medium text-sm">
                             View Details
                         </a>
-                        <a href="{{ route('bookings.create', $course->slug) }}" class="flex-1 text-center bg-brand-primary text-white px-4 py-2 rounded-none hover:bg-brand-dark transition font-medium">
+                        <a href="{{ route('bookings.create', $course->slug) }}" class="flex-1 min-w-0 text-center whitespace-nowrap bg-brand-primary text-white px-4 py-3 rounded-none hover:bg-brand-dark transition font-medium text-sm">
                             Book Now
                         </a>
                         @else
-                        <a href="{{ route('courses') }}" class="flex-1 text-center bg-gray-100 text-brand-primary px-4 py-2 rounded-none hover:bg-gray-200 transition font-medium">
+                        <a href="{{ route('courses') }}" class="flex-1 min-w-0 text-center whitespace-nowrap bg-gray-100 text-brand-primary px-4 py-3 rounded-none border border-gray-200 hover:bg-gray-200 hover:border-gray-300 transition font-medium text-sm">
                             View Details
                         </a>
-                        <a href="{{ route('courses') }}" class="flex-1 text-center bg-brand-primary text-white px-4 py-2 rounded-none hover:bg-brand-dark transition font-medium">
+                        <a href="{{ route('courses') }}" class="flex-1 min-w-0 text-center whitespace-nowrap bg-brand-primary text-white px-4 py-3 rounded-none hover:bg-brand-dark transition font-medium text-sm">
                             Book Now
                         </a>
                         @endif
@@ -159,11 +159,11 @@
     <div class="bg-brand-primary rounded-none shadow-lg p-12 text-center text-white">
         <h2 class="text-3xl font-bold mb-4 text-white">Ready to Get Started?</h2>
         <p class="text-xl text-gray-200 mb-8">Join our training programs today and take the next step in your career</p>
-        <div class="flex justify-center space-x-4">
-            <a href="{{ route('courses') }}" class="bg-white text-brand-primary px-8 py-3 rounded-none hover:bg-gray-100 font-semibold transition">
+        <div class="flex flex-wrap justify-center gap-3">
+            <a href="{{ route('courses') }}" class="inline-flex items-center justify-center whitespace-nowrap bg-white text-brand-primary px-6 py-3 rounded-none border border-white/20 hover:bg-gray-100 hover:border-gray-300 transition font-semibold text-sm">
                 Browse Courses
             </a>
-            <a href="{{ route('consulting') }}" class="bg-brand-dark text-white px-8 py-3 rounded-none hover:bg-gray-800 font-semibold transition">
+            <a href="{{ route('consulting') }}" class="inline-flex items-center justify-center whitespace-nowrap bg-brand-dark text-white px-6 py-3 rounded-none border border-white/20 hover:bg-gray-800 transition font-semibold text-sm">
                 Contact Us
             </a>
         </div>

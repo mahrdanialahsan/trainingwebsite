@@ -52,7 +52,7 @@
                             
                             <div style="margin: 20px 0;">
                                 <h2 style="margin: 0 0 10px 0; color: #1a1a1a; font-size: 18px; font-weight: bold;">Message:</h2>
-                                <div style="background-color: #ffffff; padding: 15px; border: 1px solid #e0e0e0; color: #333333; line-height: 1.6; white-space: pre-wrap;">{{ $message }}</div>
+                                <div style="background-color: #ffffff; padding: 15px; border: 1px solid #e0e0e0; color: #333333; line-height: 1.6; white-space: pre-wrap;">{{ $messageText }}</div>
                             </div>
                             
                             <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0;">

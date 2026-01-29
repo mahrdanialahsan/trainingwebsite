@@ -6,9 +6,9 @@
 <div>
     <div class="flex justify-between items-center mb-8">
         <h1 class="text-3xl font-bold text-gray-900">About Page Sections</h1>
-        <a href="{{ route('admin.about.create') }}" class="bg-brand-primary text-white px-4 py-2 rounded-none hover:bg-brand-dark">
-            Add New Section
-        </a>
+{{--        <a href="{{ route('admin.about.create') }}" class="bg-brand-primary text-white px-4 py-2 rounded-none hover:bg-brand-dark">--}}
+{{--            Add New Section--}}
+{{--        </a>--}}
     </div>
 
     <div class="bg-white rounded-none shadow overflow-hidden">

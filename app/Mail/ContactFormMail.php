@@ -17,7 +17,7 @@ class ContactFormMail extends Mailable
     public $email;
     public $phone;
     public $subject;
-    public $message;
+    public $messageText;
 
     /**
      * Create a new message instance.
@@ -28,7 +28,7 @@ class ContactFormMail extends Mailable
         $this->email = $email;
         $this->phone = $phone;
         $this->subject = $subject;
-        $this->message = $message;
+        $this->messageText = $message;
     }
 
     /**

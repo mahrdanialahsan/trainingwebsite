@@ -34,11 +34,13 @@
         .js-mobile-close-icon { display: none; }
         .mobile-nav-open .js-mobile-menu-icon { display: none; }
         .mobile-nav-open .js-mobile-close-icon { display: block; }
+        /* Hand cursor on buttons and submit inputs (works with or without Vite) */
+        button, input[type="submit"], input[type="button"], [type="submit"], [type="button"], a.cursor-pointer { cursor: pointer; }
     </style>
     @stack('styles')
 </head>
 <body class="bg-gray-50">
-    <nav class="bg-white shadow-sm border-b border-gray-200 relative" data-controller="mobile-nav">
+    <nav class="bg-white shadow-sm border-b border-gray-200 relative" id="main-nav">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
                 <a href="{{ route('home') }}" class="flex items-center">
@@ -107,11 +109,11 @@
                     </div>
                     @else
                     <a href="{{ route('login') }}" class="text-brand-primary font-medium hover:text-brand-dark transition" data-turbo-action="advance">Sign In</a>
-                    <a href="{{ route('register') }}" class="bg-brand-primary text-white px-4 py-2 rounded-none hover:bg-brand-dark transition" data-turbo-action="advance">Sign Up</a>
+                    <a href="{{ route('register') }}" class="bg-brand-primary text-white px-4 py-2 rounded-none hover:bg-brand-dark transition cursor-pointer" data-turbo-action="advance">Sign Up</a>
                     @endauth
                 </div>
                 {{-- Mobile menu button --}}
-                <button type="button" id="mobile-menu-btn" class="lg:hidden p-2 -mr-2 text-brand-primary hover:text-brand-dark transition" data-action="click->mobile-nav#toggle" aria-label="Toggle menu">
+                <button type="button" id="mobile-menu-btn" class="lg:hidden p-2 -mr-2 text-brand-primary hover:text-brand-dark transition cursor-pointer" aria-label="Toggle menu">
                     <span class="js-mobile-menu-icon" aria-hidden="true">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
                     </span>
@@ -122,36 +124,36 @@
             </div>
         </div>
         {{-- Mobile menu panel (full height below header) --}}
-        <div id="mobile-menu-panel" data-mobile-nav-target="panel" class="hidden lg:hidden fixed top-20 left-0 right-0 bottom-0 bg-white border-t border-gray-200 shadow-lg z-40 overflow-y-auto">
+        <div id="mobile-menu-panel" class="hidden lg:hidden fixed top-20 left-0 right-0 bottom-0 bg-white border-t border-gray-200 shadow-lg z-40 overflow-y-auto">
             <div class="px-4 py-6 space-y-1 min-h-full">
-                <a href="{{ route('home') }}" class="block py-2 text-brand-primary font-medium hover:text-brand-dark transition" data-turbo-action="advance" data-action="click->mobile-nav#close">Home</a>
-                <a href="{{ route('about') }}" class="block py-2 text-brand-primary font-medium hover:text-brand-dark transition" data-turbo-action="advance" data-action="click->mobile-nav#close">About</a>
-                <a href="{{ route('trainings.index') }}" class="block py-2 text-brand-primary font-medium hover:text-brand-dark transition" data-turbo-action="advance" data-action="click->mobile-nav#close">Training</a>
+                <a href="{{ route('home') }}" class="block py-2 text-brand-primary font-medium hover:text-brand-dark transition mobile-menu-link" data-turbo-action="advance">Home</a>
+                <a href="{{ route('about') }}" class="block py-2 text-brand-primary font-medium hover:text-brand-dark transition mobile-menu-link" data-turbo-action="advance">About</a>
+                <a href="{{ route('trainings.index') }}" class="block py-2 text-brand-primary font-medium hover:text-brand-dark transition mobile-menu-link" data-turbo-action="advance">Training</a>
                 @php $trainings = \App\Models\Training::where('is_active', true)->orderBy('order')->get(); @endphp
                 @if($trainings->count() > 0)
                     @foreach($trainings as $training)
-                        <a href="{{ route('trainings.show', $training->slug) }}" class="block py-2 pl-4 text-sm text-brand-secondary hover:text-brand-dark transition" data-turbo-action="advance" data-action="click->mobile-nav#close">{{ $training->title }}</a>
+                        <a href="{{ route('trainings.show', $training->slug) }}" class="block py-2 pl-4 text-sm text-brand-secondary hover:text-brand-dark transition mobile-menu-link" data-turbo-action="advance">{{ $training->title }}</a>
                     @endforeach
                 @endif
-                <a href="{{ route('courses') }}" class="block py-2 text-brand-primary font-medium hover:text-brand-dark transition" data-turbo-action="advance" data-action="click->mobile-nav#close">Courses</a>
-                <a href="{{ route('consulting') }}" class="block py-2 text-brand-primary font-medium hover:text-brand-dark transition" data-turbo-action="advance" data-action="click->mobile-nav#close">Consulting</a>
-                <a href="{{ route('faqs.index') }}" class="block py-2 text-brand-primary font-medium hover:text-brand-dark transition" data-turbo-action="advance" data-action="click->mobile-nav#close">FAQs</a>
-                <a href="{{ route('contact') }}" class="block py-2 text-brand-primary font-medium hover:text-brand-dark transition" data-turbo-action="advance" data-action="click->mobile-nav#close">Contact</a>
+                <a href="{{ route('courses') }}" class="block py-2 text-brand-primary font-medium hover:text-brand-dark transition mobile-menu-link" data-turbo-action="advance">Courses</a>
+                <a href="{{ route('consulting') }}" class="block py-2 text-brand-primary font-medium hover:text-brand-dark transition mobile-menu-link" data-turbo-action="advance">Consulting</a>
+                <a href="{{ route('faqs.index') }}" class="block py-2 text-brand-primary font-medium hover:text-brand-dark transition mobile-menu-link" data-turbo-action="advance">FAQs</a>
+                <a href="{{ route('contact') }}" class="block py-2 text-brand-primary font-medium hover:text-brand-dark transition mobile-menu-link" data-turbo-action="advance">Contact</a>
                 @auth
                 <div class="border-t border-gray-200 pt-3 mt-3 space-y-1">
-                    <a href="{{ route('dashboard') }}" class="block py-2 text-brand-primary font-medium hover:text-brand-dark transition" data-turbo-action="advance" data-action="click->mobile-nav#close">Dashboard</a>
-                    <a href="{{ route('dashboard', ['tab' => 'bookings']) }}" class="block py-2 text-sm text-brand-secondary hover:text-brand-dark transition" data-turbo-action="advance" data-action="click->mobile-nav#close">My Bookings</a>
-                    <a href="{{ route('dashboard', ['tab' => 'orders']) }}" class="block py-2 text-sm text-brand-secondary hover:text-brand-dark transition" data-turbo-action="advance" data-action="click->mobile-nav#close">Orders</a>
-                    <a href="{{ route('dashboard', ['tab' => 'account']) }}" class="block py-2 text-sm text-brand-secondary hover:text-brand-dark transition" data-turbo-action="advance" data-action="click->mobile-nav#close">My Account</a>
-                    <form method="POST" action="{{ route('logout') }}" class="pt-2" data-turbo="false" data-action="submit->mobile-nav#close">
+                    <a href="{{ route('dashboard') }}" class="block py-2 text-brand-primary font-medium hover:text-brand-dark transition mobile-menu-link" data-turbo-action="advance">Dashboard</a>
+                    <a href="{{ route('dashboard', ['tab' => 'bookings']) }}" class="block py-2 text-sm text-brand-secondary hover:text-brand-dark transition mobile-menu-link" data-turbo-action="advance">My Bookings</a>
+                    <a href="{{ route('dashboard', ['tab' => 'orders']) }}" class="block py-2 text-sm text-brand-secondary hover:text-brand-dark transition mobile-menu-link" data-turbo-action="advance">Orders</a>
+                    <a href="{{ route('dashboard', ['tab' => 'account']) }}" class="block py-2 text-sm text-brand-secondary hover:text-brand-dark transition mobile-menu-link" data-turbo-action="advance">My Account</a>
+                    <form method="POST" action="{{ route('logout') }}" class="pt-2 mobile-menu-close-on-submit" data-turbo="false">
                         @csrf
                         <button type="submit" class="block w-full text-left py-2 text-sm text-brand-secondary hover:text-brand-dark transition">Logout</button>
                     </form>
                 </div>
                 @else
                 <div class="border-t border-gray-200 pt-3 mt-3 flex flex-col gap-2">
-                    <a href="{{ route('login') }}" class="block py-2 text-brand-primary font-medium hover:text-brand-dark transition text-center" data-turbo-action="advance" data-action="click->mobile-nav#close">Sign In</a>
-                    <a href="{{ route('register') }}" class="block py-2 bg-brand-primary text-white text-center font-medium hover:bg-brand-dark transition" data-turbo-action="advance" data-action="click->mobile-nav#close">Sign Up</a>
+                    <a href="{{ route('login') }}" class="block py-2 text-brand-primary font-medium hover:text-brand-dark transition text-center mobile-menu-link" data-turbo-action="advance">Sign In</a>
+                    <a href="{{ route('register') }}" class="block py-2 bg-brand-primary text-white text-center font-medium hover:bg-brand-dark transition cursor-pointer mobile-menu-link" data-turbo-action="advance">Sign Up</a>
                 </div>
                 @endauth
             </div>
@@ -207,7 +209,7 @@
                         <div class="flex flex-col sm:flex-row gap-2">
                             <input type="email" name="email" id="subscribe-email" placeholder="Enter your email" required
                                    class="flex-1 px-3 py-2 bg-white text-gray-900 rounded-none focus:outline-none focus:ring-2 focus:ring-white text-sm">
-                            <button type="submit" id="subscribe-button" class="bg-brand-dark text-white px-4 py-2 rounded-none hover:bg-gray-800 font-semibold transition text-sm whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed">
+                            <button type="submit" id="subscribe-button" class="bg-brand-dark text-white px-4 py-2 rounded-none hover:bg-gray-800 font-semibold transition text-sm whitespace-nowrap cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
                                 <span id="subscribe-button-text">Subscribe</span>
                                 <span id="subscribe-button-loading" class="hidden">Subscribing...</span>
                             </button>
@@ -303,6 +305,7 @@
                 })
                 .then(({ status, data }) => {
                     submitButton.disabled = false;
+                    submitButton.classList.remove('btn-loading');
                     submitText.classList.remove('hidden');
                     submitLoading.classList.add('hidden');
 
@@ -316,32 +319,45 @@
                     }
                 })
                 .catch(error => {
-                    submitButton.disabled = false;
-                    submitText.classList.remove('hidden');
-                    submitLoading.classList.add('hidden');
-                    messageContainer.className = 'mb-2 text-sm text-red-300';
+submitButton.disabled = false;
+                submitButton.classList.remove('btn-loading');
+                submitText.classList.remove('hidden');
+                submitLoading.classList.add('hidden');
+                messageContainer.className = 'mb-2 text-sm text-red-300';
                     messageContainer.innerHTML = '<span class="flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>An error occurred. Please try again.</span>';
                 });
             });
         }
     });
 
-    // Mobile menu toggle (works with or without Stimulus / Vite)
+    // Mobile menu toggle – single handler so it works with or without Vite/Stimulus
     function initMobileMenu() {
         var panel = document.getElementById('mobile-menu-panel');
-        var nav = panel && panel.closest('nav');
+        var nav = document.getElementById('main-nav');
         var btn = document.getElementById('mobile-menu-btn');
-        if (!btn || !panel || !nav || nav.dataset.mobileMenuInited) return;
-        nav.dataset.mobileMenuInited = 'true';
-        btn.addEventListener('click', function() {
+        if (!btn || !panel || !nav) return;
+        // Avoid double init (e.g. when both inline script and Stimulus could run)
+        if (btn._mobileMenuInited) return;
+        btn._mobileMenuInited = true;
+
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var isHidden = panel.classList.contains('hidden');
             panel.classList.toggle('hidden');
             nav.classList.toggle('mobile-nav-open', !panel.classList.contains('hidden'));
         });
-        panel.querySelectorAll('a, button').forEach(function(el) {
-            el.addEventListener('click', function() {
-                panel.classList.add('hidden');
-                nav.classList.remove('mobile-nav-open');
-            });
+
+        function closeMenu() {
+            panel.classList.add('hidden');
+            nav.classList.remove('mobile-nav-open');
+        }
+
+        panel.querySelectorAll('.mobile-menu-link').forEach(function(el) {
+            el.addEventListener('click', closeMenu);
+        });
+        panel.querySelectorAll('.mobile-menu-close-on-submit').forEach(function(form) {
+            form.addEventListener('submit', closeMenu);
         });
     }
     if (document.readyState === 'loading') {

@@ -11,8 +11,8 @@
         @foreach($courses as $course)
         <div class="bg-white rounded-none shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
             @if($course->thumbnail_image)
-            <div class="w-full h-64 overflow-hidden relative group">
-                <img src="{{ asset($course->thumbnail_image) }}" alt="{{ $course->title }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+            <div class="w-full h-64 overflow-hidden relative group bg-gray-100 flex items-center justify-center">
+                <img src="{{ asset($course->thumbnail_image) }}" alt="{{ $course->title }}" class="w-full h-full object-contain transition-transform duration-500 group-hover:scale-110">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </div>
             @endif

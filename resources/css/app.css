@@ -1,5 +1,35 @@
 @import 'tailwindcss';
 
+/* Frontend: pointer cursor on buttons and button-like elements */
+button,
+input[type="submit"],
+input[type="button"],
+[type="submit"],
+[type="button"],
+a.cursor-pointer {
+    cursor: pointer;
+}
+
+/* Loading state for buttons (form submit / click) */
+.btn-loading {
+    cursor: wait !important;
+    opacity: 0.85;
+    pointer-events: none;
+}
+
+.btn-loading::after {
+    content: '';
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    margin-left: 0.5em;
+    vertical-align: middle;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
 /* Turbo Transitions - React-like smooth page transitions */
 [turbo-frame] {
     opacity: 1;

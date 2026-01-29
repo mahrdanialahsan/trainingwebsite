@@ -14,14 +14,14 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\CourseController as AdminCourseController;
 use App\Http\Controllers\Admin\BookingController as AdminBookingController;
 use App\Http\Controllers\Admin\WaiverController;
-use App\Http\Controllers\Admin\PageController;
-use App\Http\Controllers\Admin\DocumentController;
 use App\Http\Controllers\Admin\BioController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\AboutController as AdminAboutController;
 use App\Http\Controllers\Admin\TrainingController as AdminTrainingController;
 use App\Http\Controllers\Admin\FaqController as AdminFaqController;
 use App\Http\Controllers\Admin\ConsultingSectionController;
+use App\Http\Controllers\Admin\ConsultationRequestController;
+use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\SubscriberController;
@@ -103,16 +103,8 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     // Waivers Management
     Route::resource('waivers', WaiverController::class);
     
-    // Pages Management
-    Route::resource('pages', PageController::class);
-    
-    // Documents Management
-    Route::resource('documents', DocumentController::class);
-    
-    // Bios Management
-    Route::get('/bios', [BioController::class, 'index'])->name('bios.index');
-    Route::get('/bios/{bio}/edit', [BioController::class, 'edit'])->name('bios.edit');
-    Route::put('/bios/{bio}', [BioController::class, 'update'])->name('bios.update');
+    // Bios Management (same pattern as about – standard resource with PUT update)
+    Route::resource('bios', BioController::class)->except(['show']);
     
     // Settings Management
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
@@ -126,7 +118,16 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     
     // Consulting Sections Management
     Route::resource('consulting-sections', ConsultingSectionController::class);
-    
+
+    // Consultation Requests (from Consulting page form)
+    Route::get('/consultation-requests', [ConsultationRequestController::class, 'index'])->name('consultation-requests.index');
+    Route::get('/consultation-requests/{consultation_request}', [ConsultationRequestController::class, 'show'])->name('consultation-requests.show');
+    Route::put('/consultation-requests/{consultation_request}/status', [ConsultationRequestController::class, 'updateStatus'])->name('consultation-requests.update-status');
+
+    // Contact Messages (from Contact Us form)
+    Route::get('/contact-messages', [ContactMessageController::class, 'index'])->name('contact-messages.index');
+    Route::get('/contact-messages/{contact_message}', [ContactMessageController::class, 'show'])->name('contact-messages.show');
+
     // Trainings Management
     Route::resource('trainings', AdminTrainingController::class);
     Route::post('trainings/{training}/facilities', [AdminTrainingController::class, 'storeFacility'])->name('trainings.facilities.store');

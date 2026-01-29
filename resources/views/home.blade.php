@@ -7,13 +7,13 @@
 <div class="relative w-full bg-brand-primary text-white py-32 md:py-40 overflow-hidden min-h-[80vh]" style="background-image: url('{{ asset('images/cover.png') }}'); background-size: cover; background-position: center center; background-repeat: no-repeat;">
     <!-- Dark Overlay for Text Readability -->
     <div class="absolute inset-0 bg-brand-primary" style="opacity: 0.5;"></div>
-    
+
     <!-- Content Overlay -->
     <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h1 class="text-5xl md:text-6xl font-bold mb-6 text-white" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">Professional Training Services</h1>
         <p class="text-xl md:text-2xl mb-8 text-gray-100" style="text-shadow: 1px 1px 3px rgba(0,0,0,0.8);">Enhance your skills with our expert-led courses and comprehensive training programs</p>
         <div class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
-            <a href="{{ route('courses') }}" class="inline-block bg-white text-brand-primary px-8 py-3 rounded-none hover:bg-gray-100 font-semibold transition shadow-lg">
+            <a href="{{ route('courses') }}" class="inline-block bg-white text-brand-primary px-8 py-3 rounded-none hover:bg-gray-100 font-semibold transition shadow-lg cursor-pointer">
                 View Training Courses
             </a>
             @php
@@ -21,9 +21,9 @@
                 $hasValidCourse = $firstCourse && $firstCourse->slug;
             @endphp
             @if($hasValidCourse)
-            <a href="{{ route('bookings.create', $firstCourse->slug) }}" class="inline-block bg-brand-dark text-white px-8 py-3 rounded-none hover:bg-gray-800 font-semibold transition shadow-lg border-2 border-white">
+            <a href="{{ route('bookings.create', $firstCourse->slug) }}" class="inline-block bg-brand-dark text-white px-8 py-3 rounded-none hover:bg-gray-800 font-semibold transition shadow-lg border-2 border-white cursor-pointer">
             @else
-            <a href="{{ route('courses') }}" class="inline-block bg-brand-dark text-white px-8 py-3 rounded-none hover:bg-gray-800 font-semibold transition shadow-lg border-2 border-white">
+            <a href="{{ route('courses') }}" class="inline-block bg-brand-dark text-white px-8 py-3 rounded-none hover:bg-gray-800 font-semibold transition shadow-lg border-2 border-white cursor-pointer">
             @endif
                 Book a Class
             </a>
@@ -37,11 +37,11 @@
         <h2 class="text-3xl font-bold text-brand-primary mb-4">Welcome to Texas Training Group</h2>
         <div class="max-w-3xl mx-auto">
             <p class="text-lg text-gray-700 mb-4">
-                We are dedicated to providing high-quality training and professional development services. 
+                We are dedicated to providing high-quality training and professional development services.
                 Our expert instructors bring years of real-world experience to help you achieve your career goals.
             </p>
             <p class="text-lg text-gray-700">
-                Whether you're looking to advance your skills, earn certifications, or explore new opportunities, 
+                Whether you're looking to advance your skills, earn certifications, or explore new opportunities,
                 we have the right program for you. Join hundreds of professionals who have transformed their careers with our training.
             </p>
         </div>
@@ -91,8 +91,8 @@
             @foreach($upcomingCourses as $course)
             <div class="bg-white rounded-none shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                 @if($course->thumbnail_image)
-                <div class="w-full h-64 overflow-hidden relative group">
-                    <img src="{{ asset($course->thumbnail_image) }}" alt="{{ $course->title }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                <div class="w-full h-64 overflow-hidden relative group bg-gray-100 flex items-center justify-center">
+                    <img src="{{ asset($course->thumbnail_image) }}" alt="{{ $course->title }}" class="w-full h-full object-contain transition-transform duration-500 group-hover:scale-110">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
                 @endif
@@ -140,7 +140,7 @@
             @endforeach
         </div>
         <div class="text-center mt-8">
-            <a href="{{ route('courses') }}" class="inline-block bg-brand-primary text-white px-8 py-3 rounded-none hover:bg-brand-dark font-semibold transition">
+            <a href="{{ route('courses') }}" class="inline-block bg-brand-primary text-white px-8 py-3 rounded-none hover:bg-brand-dark font-semibold transition cursor-pointer">
                 View All Courses
             </a>
         </div>
@@ -149,9 +149,49 @@
     <div class="bg-white rounded-none shadow-md p-12 text-center mb-16">
         <h2 class="text-2xl font-bold text-gray-900 mb-4">Upcoming Training Courses</h2>
         <p class="text-gray-600 mb-6">New courses are being added regularly. Check back soon for upcoming training sessions.</p>
-        <a href="{{ route('courses') }}" class="inline-block bg-blue-600 text-white px-6 py-3 rounded-none hover:bg-blue-700">
+        <a href="{{ route('courses') }}" class="inline-block bg-blue-600 text-white px-6 py-3 rounded-none hover:bg-blue-700 cursor-pointer">
             View All Courses
         </a>
+    </div>
+    @endif
+
+    <!-- Meet Our Team Section -->
+    @if(isset($bios) && $bios->count() > 0)
+    <div class="mb-16">
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-bold text-brand-primary mb-4">Meet Our Team</h2>
+            <p class="text-lg text-gray-700">The people behind Texas Training Group</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            @foreach($bios as $bio)
+            <div class="bg-white rounded-none shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition">
+                <div class="aspect-[4/3] bg-gray-200 flex items-center justify-center overflow-hidden">
+                    @if($bio->photo)
+                        <img src="{{ asset('storage/' . $bio->photo) }}" alt="{{ $bio->name }}" class="w-full h-full object-contain">
+                    @else
+                        <svg class="w-24 h-24 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                    @endif
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-brand-primary mb-1">{{ $bio->name }}</h3>
+                    @if($bio->tagline)
+                        <p class="text-brand-secondary font-semibold text-sm mb-3">{{ $bio->tagline }}</p>
+                    @endif
+                    @if($bio->bio)
+                        <p class="text-gray-700 text-sm mb-4">{{ Str::limit(strip_tags($bio->bio), 120) }}</p>
+                    @endif
+                    <a href="{{ route('about') }}#team" class="text-brand-primary hover:text-brand-dark text-sm font-medium">Learn more →</a>
+                </div>
+            </div>
+            @endforeach
+        </div>
+        <div class="text-center mt-8">
+            <a href="{{ route('about') }}" class="inline-block bg-brand-primary text-white px-6 py-3 rounded-none hover:bg-brand-dark font-semibold transition cursor-pointer">
+                About Us
+            </a>
+        </div>
     </div>
     @endif
 

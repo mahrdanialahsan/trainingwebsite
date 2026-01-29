@@ -99,7 +99,7 @@
                     </label>
                 </div>
 
-                <button type="submit" id="login-submit" class="w-full bg-brand-primary text-white px-4 py-2 rounded-none hover:bg-brand-dark font-semibold disabled:opacity-50 disabled:cursor-not-allowed">
+                <button type="submit" id="login-submit" class="w-full bg-brand-primary text-white px-4 py-2 rounded-none hover:bg-brand-dark font-semibold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
                     <span id="login-submit-text">Sign In</span>
                     <span id="login-submit-loading" class="hidden">Signing in...</span>
                 </button>

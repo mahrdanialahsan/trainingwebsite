@@ -110,8 +110,11 @@
                 @endif
             </div>
             <div class="flex items-center">
-                <div>
-                    @if($whatWeOffer->additional_data && isset($whatWeOffer->additional_data['items']))
+                <div class="w-full">
+                    @if($whatWeOffer->content)
+                        <div class="text-lg text-gray-700 mb-6">{!! $whatWeOffer->content !!}</div>
+                    @endif
+                    @if($whatWeOffer->additional_data && isset($whatWeOffer->additional_data['items']) && count($whatWeOffer->additional_data['items']) > 0)
                         <ul class="space-y-4">
                             @foreach($whatWeOffer->additional_data['items'] as $item)
                                 <li class="flex items-start">
@@ -122,8 +125,6 @@
                                 </li>
                             @endforeach
                         </ul>
-                    @elseif($whatWeOffer->content)
-                        <div class="text-lg text-gray-700">{!! $whatWeOffer->content !!}</div>
                     @endif
                 </div>
             </div>
@@ -233,8 +234,11 @@
                 @endif
             </div>
             <div class="flex items-center">
-                <div>
-                    @if($trainingSafety->additional_data && isset($trainingSafety->additional_data['items']))
+                <div class="w-full">
+                    @if($trainingSafety->content)
+                        <div class="text-lg text-gray-700 mb-6">{!! $trainingSafety->content !!}</div>
+                    @endif
+                    @if($trainingSafety->additional_data && isset($trainingSafety->additional_data['items']) && count($trainingSafety->additional_data['items']) > 0)
                         <ul class="space-y-4">
                             @foreach($trainingSafety->additional_data['items'] as $item)
                                 <li class="flex items-start">
@@ -245,11 +249,58 @@
                                 </li>
                             @endforeach
                         </ul>
-                    @elseif($trainingSafety->content)
-                        <div class="text-lg text-gray-700">{!! $trainingSafety->content !!}</div>
                     @endif
                 </div>
             </div>
+        </div>
+    </div>
+</section>
+@endif
+
+<!-- Our Team / Bios Section -->
+@if($bios->count() > 0)
+<section id="team" class="bg-gray-100 py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-4xl font-bold text-about-gold text-center mb-12">Meet Our Team</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            @foreach($bios as $bio)
+            <div class="bg-white rounded-none shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition">
+                <div class="aspect-[4/3] bg-gray-200 flex items-center justify-center overflow-hidden">
+                    @if($bio->photo)
+                        <img src="{{ asset('storage/' . $bio->photo) }}" alt="{{ $bio->name }}" class="w-full h-full object-contain">
+                    @else
+                        <svg class="w-24 h-24 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                    @endif
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-brand-primary mb-1">{{ $bio->name }}</h3>
+                    @if($bio->tagline)
+                        <p class="text-about-gold font-semibold text-sm mb-3">{{ $bio->tagline }}</p>
+                    @endif
+                    @if($bio->bio)
+                        <div class="text-gray-700 text-sm mb-4 prose prose-sm max-w-none">{!! $bio->bio !!}</div>
+                    @endif
+                    @if($bio->credentials)
+                        <div class="text-gray-600 text-xs mb-2"><span class="font-semibold text-gray-800">Credentials:</span> <span class="prose prose-sm max-w-none">{!! $bio->credentials !!}</span></div>
+                    @endif
+                    @if($bio->experience)
+                        <div class="text-gray-600 text-xs mb-3"><span class="font-semibold text-gray-800">Experience:</span> <span class="prose prose-sm max-w-none">{!! $bio->experience !!}</span></div>
+                    @endif
+                    @if($bio->email || $bio->phone)
+                        <div class="pt-3 border-t border-gray-200 space-y-1">
+                            @if($bio->email)
+                                <a href="mailto:{{ $bio->email }}" class="block text-brand-primary hover:text-brand-dark text-sm">{{ $bio->email }}</a>
+                            @endif
+                            @if($bio->phone)
+                                <a href="tel:{{ preg_replace('/[^0-9]/', '', $bio->phone) }}" class="block text-brand-primary hover:text-brand-dark text-sm">{{ $bio->phone }}</a>
+                            @endif
+                        </div>
+                    @endif
+                </div>
+            </div>
+            @endforeach
         </div>
     </div>
 </section>
@@ -259,7 +310,7 @@
 <section class="bg-gray-100 py-16 border-t border-gray-300">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 class="text-4xl font-bold text-about-gold mb-8">Ready To Get Started?</h2>
-        <a href="{{ route('courses') }}" class="inline-block bg-brand-dark text-white px-12 py-4 rounded-none hover:bg-brand-primary text-lg font-semibold transition">
+        <a href="{{ route('courses') }}" class="inline-block bg-brand-dark text-white px-12 py-4 rounded-none hover:bg-brand-primary text-lg font-semibold transition cursor-pointer">
             VIEW COURSES
         </a>
     </div>
@@ -273,7 +324,7 @@
         <div class="space-y-4">
             @foreach($faqs as $faq)
             <div class="bg-white rounded-none shadow-md overflow-hidden">
-                <button class="w-full text-left px-6 py-4 flex justify-between items-center focus:outline-none" onclick="toggleFaq({{ $faq->id }})">
+                <button type="button" class="w-full text-left px-6 py-4 flex justify-between items-center focus:outline-none cursor-pointer" onclick="toggleFaq({{ $faq->id }})">
                     <span class="text-lg font-semibold text-gray-900">{{ $faq->question }}</span>
                     <svg id="icon-{{ $faq->id }}" class="w-5 h-5 text-about-gold transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>

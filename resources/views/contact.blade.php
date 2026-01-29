@@ -52,9 +52,26 @@
         <!-- Contact Form -->
         <div>
             <h2 class="text-2xl font-bold text-brand-primary mb-6">Send Us a Message</h2>
-            <div id="contact-message" class="mb-4"></div>
-            
-            <form id="contact-form" class="space-y-6" method="POST" action="{{ route('contact.store') }}">
+            <div id="contact-message" class="mb-4">
+                @if(session('success'))
+                    <div class="bg-green-100 border-2 border-green-400 text-green-700 px-4 py-3 rounded-none mb-4">
+                        <div class="flex items-start">
+                            <svg class="w-5 h-5 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                            <p class="font-semibold">{{ session('success') }}</p>
+                        </div>
+                    </div>
+                @endif
+                @if(session('error'))
+                    <div class="bg-red-100 border-2 border-red-400 text-red-700 px-4 py-3 rounded-none mb-4">
+                        <div class="flex items-start">
+                            <svg class="w-5 h-5 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>
+                            <p class="font-semibold">{{ session('error') }}</p>
+                        </div>
+                    </div>
+                @endif
+            </div>
+
+            <form id="contact-form" class="space-y-6" method="POST" action="{{ route('contact.store') }}" data-turbo="false">
                 @csrf
                 <div>
                     <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
@@ -94,7 +111,7 @@
                     @enderror
                 </div>
                 <div>
-                    <button type="submit" id="contact-submit" class="w-full bg-brand-primary text-white px-6 py-3 rounded-none hover:bg-brand-dark font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed">
+                    <button type="submit" id="contact-submit" class="w-full bg-brand-primary text-white px-6 py-3 rounded-none hover:bg-brand-dark font-semibold transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
                         <span id="contact-submit-text">Send Message</span>
                         <span id="contact-submit-loading" class="hidden">Sending...</span>
                     </button>
@@ -196,6 +213,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(({ status, data }) => {
                 submitButton.disabled = false;
+                submitButton.classList.remove('btn-loading');
                 submitText.classList.remove('hidden');
                 submitLoading.classList.add('hidden');
 
@@ -211,6 +229,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => {
                 submitButton.disabled = false;
+                submitButton.classList.remove('btn-loading');
                 submitText.classList.remove('hidden');
                 submitLoading.classList.add('hidden');
                 showMessage('An error occurred. Please try again.', 'error');

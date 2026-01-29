@@ -31,27 +31,70 @@ if (window.Turbo) {
     window.Turbo.session.drive = true;
 }
 
+// Loading buttons stash (re-enable on Turbo fetch failure)
+let loadingButtons = [];
+
+function resetLoadingButtons() {
+    loadingButtons.forEach(btn => {
+        btn.disabled = false;
+        btn.classList.remove('btn-loading');
+        if (btn.dataset.originalText !== undefined) {
+            btn.textContent = btn.dataset.originalText;
+        }
+    });
+    loadingButtons = [];
+}
+
+// Global form submit: show loading on all submit buttons
+document.addEventListener('submit', (e) => {
+    const form = e.target;
+    if (form.tagName !== 'FORM') return;
+    const buttons = form.querySelectorAll('button[type="submit"], input[type="submit"]');
+    buttons.forEach(btn => {
+        btn.disabled = true;
+        btn.classList.add('btn-loading');
+        if (btn.tagName === 'BUTTON' && btn.children.length === 0 && btn.textContent.trim()) {
+            btn.dataset.originalText = btn.textContent;
+            btn.textContent = 'Loading...';
+        }
+        loadingButtons.push(btn);
+    });
+}, true);
+
+document.addEventListener('turbo:submit-end', () => {
+    loadingButtons = [];
+});
+
+document.addEventListener('turbo:fetch-request-failed', () => {
+    resetLoadingButtons();
+});
+
+document.addEventListener('turbo:fetch-request-done', (event) => {
+    const response = event.detail?.fetchResponse?.response;
+    if (response && !response.ok) resetLoadingButtons();
+    const loader = document.getElementById('turbo-loader');
+    if (loader) loader.classList.add('hidden');
+});
+
 // Handle Turbo events for better UX
 document.addEventListener('turbo:before-visit', (event) => {
-    // Show loading indicator if needed
     const loader = document.getElementById('turbo-loader');
-    if (loader) {
-        loader.classList.remove('hidden');
-    }
+    if (loader) loader.classList.remove('hidden');
+});
+
+document.addEventListener('turbo:before-fetch-request', () => {
+    const loader = document.getElementById('turbo-loader');
+    if (loader) loader.classList.remove('hidden');
 });
 
 document.addEventListener('turbo:visit', (event) => {
-    // Hide any previous error messages
     const errorMessages = document.querySelectorAll('.turbo-error-message');
     errorMessages.forEach(msg => msg.remove());
 });
 
 document.addEventListener('turbo:load', (event) => {
-    // Hide loading indicator
     const loader = document.getElementById('turbo-loader');
-    if (loader) {
-        loader.classList.add('hidden');
-    }
+    if (loader) loader.classList.add('hidden');
     
     // Reinitialize any components that need it
     if (typeof tinymce !== 'undefined') {

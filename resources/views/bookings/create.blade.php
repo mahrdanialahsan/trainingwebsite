@@ -68,7 +68,7 @@
                 <p><strong>Price:</strong> ${{ number_format($course->price, 2) }}</p>
             </div>
 
-            <button type="submit" class="w-full bg-brand-primary text-white px-6 py-3 rounded-none hover:bg-brand-dark text-lg font-semibold transition">
+            <button type="submit" class="w-full bg-brand-primary text-white px-6 py-3 rounded-none hover:bg-brand-dark text-lg font-semibold transition cursor-pointer" style="cursor: pointer;">
                 Continue to Waiver
             </button>
         </form>

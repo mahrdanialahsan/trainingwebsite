@@ -38,7 +38,7 @@
                            value="{{ old('email') }}" autofocus>
                 </div>
 
-                <button type="submit" class="w-full bg-brand-primary text-white px-4 py-2 rounded-none hover:bg-brand-dark font-semibold mb-4">
+                <button type="submit" class="w-full bg-brand-primary text-white px-4 py-2 rounded-none hover:bg-brand-dark font-semibold mb-4 cursor-pointer">
                     Send Password Reset Link
                 </button>
             </form>

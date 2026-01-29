@@ -9,7 +9,7 @@
     <div class="bg-white rounded-none shadow-md p-8">
         <h2 class="text-2xl font-semibold mb-4">{{ $waiver->title }}</h2>
 
-        <form method="POST" action="{{ route('bookings.accept-waiver', $booking) }}" id="waiverForm">
+        <form method="POST" action="{{ route('bookings.accept-waiver', $booking) }}" id="waiverForm" data-turbo="false">
             @csrf
 
             <div class="mb-6">
@@ -48,11 +48,11 @@
             </div>
 
             <div class="flex space-x-4">
-                <button type="submit" class="flex-1 bg-brand-primary text-white px-6 py-3 rounded-none hover:bg-brand-dark text-lg font-semibold transition">
+                <button type="submit" class="flex-1 bg-brand-primary text-white px-6 py-3 rounded-none hover:bg-brand-dark text-lg font-semibold transition cursor-pointer" style="cursor: pointer;">
                     Accept and Continue to Payment
                 </button>
                 <a href="{{ route('courses.show', $booking->course->slug) }}" 
-                   class="flex-1 bg-gray-300 text-gray-700 px-6 py-3 rounded-none hover:bg-gray-400 text-lg font-semibold text-center">
+                   class="flex-1 bg-gray-300 text-gray-700 px-6 py-3 rounded-none hover:bg-gray-400 text-lg font-semibold text-center cursor-pointer">
                     Cancel
                 </a>
             </div>

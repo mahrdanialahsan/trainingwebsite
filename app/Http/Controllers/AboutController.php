@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AboutSection;
+use App\Models\Bio;
 use App\Models\Faq;
 use Illuminate\Http\Request;
 
@@ -22,6 +23,12 @@ class AboutController extends Controller
             ->orderBy('displayorder')
             ->get();
         
-        return view('about', compact('sections', 'faqs'));
+        // Get active bios for team section
+        $bios = Bio::where('is_active', true)
+            ->orderBy('type')
+            ->orderBy('name')
+            ->get();
+        
+        return view('about', compact('sections', 'faqs', 'bios'));
     }
 }

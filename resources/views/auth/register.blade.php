@@ -120,7 +120,7 @@
                     @enderror
                 </div>
 
-                <button type="submit" id="register-submit" class="w-full bg-brand-primary text-white px-4 py-2 rounded-none hover:bg-brand-dark font-semibold disabled:opacity-50 disabled:cursor-not-allowed">
+                <button type="submit" id="register-submit" class="w-full bg-brand-primary text-white px-4 py-2 rounded-none hover:bg-brand-dark font-semibold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
                     <span id="register-submit-text">Create Account</span>
                     <span id="register-submit-loading" class="hidden">Creating account...</span>
                 </button>

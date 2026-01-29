@@ -6,8 +6,8 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <div class="bg-white rounded-none shadow-md overflow-hidden">
         @if($course->thumbnail_image)
-        <div class="w-full h-64 md:h-96 overflow-hidden">
-            <img src="{{ asset($course->thumbnail_image) }}" alt="{{ $course->title }}" class="w-full h-full object-cover">
+        <div class="w-full h-64 md:h-96 overflow-hidden bg-gray-100 flex items-center justify-center">
+            <img src="{{ asset($course->thumbnail_image) }}" alt="{{ $course->title }}" class="w-full h-full object-contain">
         </div>
         @endif
         <div class="p-8">
@@ -43,7 +43,7 @@
 
         @if($course->canBeBooked())
         <div class="mt-8">
-            <a href="{{ route('bookings.create', $course->slug) }}" class="inline-block bg-brand-primary text-white px-6 py-3 rounded-none hover:bg-brand-dark text-lg font-semibold transition">
+            <a href="{{ route('bookings.create', $course->slug) }}" class="inline-block bg-brand-primary text-white px-6 py-3 rounded-none hover:bg-brand-dark text-lg font-semibold transition cursor-pointer">
                 Book This Course
             </a>
         </div>

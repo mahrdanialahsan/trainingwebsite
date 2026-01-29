@@ -117,6 +117,7 @@ class BookingController extends Controller
         $checkoutSessionId = null;
 
         // Create Stripe checkout session if keys are configured
+        $stripeError = null;
         if ($stripePublicKey && $stripeSecretKey) {
             try {
                 Stripe::setApiKey($stripeSecretKey);
@@ -144,13 +145,14 @@ class BookingController extends Controller
 
                 $checkoutSessionId = $session->id;
             } catch (\Exception $e) {
-                // If Stripe fails, we'll show an error
-                return redirect()->route('bookings.payment', $booking)
-                    ->with('error', 'Payment system error. Please try again later.');
+                // Show payment page with error instead of redirecting (redirect caused infinite loop)
+                $stripeError = 'Payment system error. Please try again later. If this continues, contact support.';
             }
+        } else {
+            $stripeError = 'Payment is not configured. Please contact support to complete your booking.';
         }
 
-        return view('bookings.payment', compact('booking', 'stripePublicKey', 'checkoutSessionId'));
+        return view('bookings.payment', compact('booking', 'stripePublicKey', 'checkoutSessionId', 'stripeError'));
     }
 
     public function processPayment(Request $request, Booking $booking)

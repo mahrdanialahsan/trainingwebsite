@@ -67,7 +67,7 @@
                 @if($course->thumbnail_image)
                 <div class="mt-2">
                     <p class="text-sm text-gray-500 mb-2">Current thumbnail:</p>
-                    <img src="{{ asset($course->thumbnail_image) }}" alt="Current thumbnail" class="w-32 h-32 object-cover border border-gray-300">
+                    <img src="{{ asset($course->thumbnail_image) }}" alt="Current thumbnail" class="w-32 h-32 object-contain bg-gray-100 border border-gray-300">
                 </div>
                 @endif
                 @error('thumbnail_image')

@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ConsultationRequestMail;
+use App\Models\ConsultationRequest;
 use App\Models\ConsultingSection;
 use App\Models\Faq;
-use App\Models\ConsultationRequest;
+use App\Models\Setting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class ConsultingController extends Controller
 {
@@ -43,6 +46,21 @@ class ConsultingController extends Controller
                 'message' => $validated['message'],
                 'status' => 'pending',
             ]);
+
+            // Send email to Contact Form Email (same as Contact Us)
+            try {
+                $contactEmail = Setting::get('contact_email', Setting::get('system_email', 'info@training.com'));
+                Mail::to($contactEmail)->send(new ConsultationRequestMail(
+                    $validated['name'],
+                    $validated['email'],
+                    $validated['company'] ?? null,
+                    $validated['phone'] ?? null,
+                    $validated['service_interest'] ?? null,
+                    $validated['message']
+                ));
+            } catch (\Exception $e) {
+                \Log::error('Consultation request email failed: ' . $e->getMessage());
+            }
 
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([

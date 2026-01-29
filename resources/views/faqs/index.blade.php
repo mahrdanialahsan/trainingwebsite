@@ -29,7 +29,7 @@
     <div class="space-y-4">
         @foreach($faqs as $faq)
         <div class="bg-white rounded-none shadow-md overflow-hidden">
-            <button class="w-full text-left px-6 py-4 flex justify-between items-center focus:outline-none hover:bg-gray-50 transition" onclick="toggleFaq({{ $faq->id }})">
+            <button type="button" class="w-full text-left px-6 py-4 flex justify-between items-center focus:outline-none hover:bg-gray-50 transition cursor-pointer" onclick="toggleFaq({{ $faq->id }})">
                 <span class="text-lg font-semibold text-gray-900 pr-4">{{ $faq->question }}</span>
                 <svg id="icon-{{ $faq->id }}" class="w-5 h-5 text-brand-primary transform transition-transform flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Bio;
 use App\Models\Course;
 use App\Models\Subscriber;
 use Illuminate\Http\Request;
@@ -17,7 +18,12 @@ class HomeController extends Controller
             ->take(6)
             ->get();
 
-        return view('home', compact('upcomingCourses'));
+        $bios = Bio::where('is_active', true)
+            ->orderBy('type')
+            ->orderBy('name')
+            ->get();
+
+        return view('home', compact('upcomingCourses', 'bios'));
     }
 
     public function subscribe(Request $request)

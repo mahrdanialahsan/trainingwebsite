@@ -62,7 +62,7 @@
 
             <form method="POST" action="{{ route('verification.send') }}">
                 @csrf
-                <button type="submit" class="w-full bg-brand-primary text-white px-4 py-2 rounded-none hover:bg-brand-dark font-semibold mb-4">
+                <button type="submit" class="w-full bg-brand-primary text-white px-4 py-2 rounded-none hover:bg-brand-dark font-semibold mb-4 cursor-pointer">
                     Resend Verification Email
                 </button>
             </form>
@@ -70,7 +70,7 @@
             <div class="mt-6 text-center">
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" class="text-sm text-gray-600 hover:text-gray-800">
+                    <button type="submit" class="text-sm text-gray-600 hover:text-gray-800 cursor-pointer">
                         Logout
                     </button>
                 </form>

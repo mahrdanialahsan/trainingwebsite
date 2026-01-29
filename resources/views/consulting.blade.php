@@ -11,7 +11,7 @@
             <h1 class="text-5xl md:text-6xl font-bold mb-6">{{ $hero->title ?? 'Professional Consulting Services' }}</h1>
             <p class="text-xl md:text-2xl text-gray-100 mb-8 max-w-3xl mx-auto">{{ $hero->subtitle ?? 'Transform your organization with expert guidance' }}</p>
             @if($hero->button_text)
-            <a href="{{ $hero->button_link ?? '#contact' }}" class="inline-block bg-white text-brand-primary px-8 py-3 rounded-none hover:bg-gray-100 font-semibold transition shadow-lg">
+            <a href="{{ $hero->button_link ?? '#contact' }}" class="inline-block bg-white text-brand-primary px-8 py-3 rounded-none hover:bg-gray-100 font-semibold transition shadow-lg cursor-pointer">
                 {{ $hero->button_text }}
             </a>
             @endif
@@ -24,7 +24,7 @@
         <div class="text-center">
             <h1 class="text-5xl md:text-6xl font-bold mb-6">Professional Consulting Services</h1>
             <p class="text-xl md:text-2xl text-gray-100 mb-8 max-w-3xl mx-auto">Transform your organization with expert guidance, strategic insights, and proven methodologies tailored to your unique challenges</p>
-            <a href="#contact" class="inline-block bg-white text-brand-primary px-8 py-3 rounded-none hover:bg-gray-100 font-semibold transition shadow-lg">
+            <a href="#contact" class="inline-block bg-white text-brand-primary px-8 py-3 rounded-none hover:bg-gray-100 font-semibold transition shadow-lg cursor-pointer">
                 Schedule a Consultation
             </a>
         </div>
@@ -138,9 +138,26 @@
                 Let's discuss how our consulting services can help your organization achieve its goals. Contact us today to schedule a free initial consultation.
             </p>
             <div class="max-w-2xl mx-auto">
-                <div id="consultation-message" class="mb-4"></div>
-                
-                <form id="consultation-form" class="space-y-6" method="POST" action="{{ route('consulting.request') }}">
+                <div id="consultation-message" class="mb-4">
+                    @if(session('success'))
+                        <div class="bg-green-100 border-2 border-green-400 text-green-700 px-4 py-3 rounded-none mb-4">
+                            <div class="flex items-start">
+                                <svg class="w-5 h-5 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                                <p class="font-semibold">{{ session('success') }}</p>
+                            </div>
+                        </div>
+                    @endif
+                    @if(session('error'))
+                        <div class="bg-red-100 border-2 border-red-400 text-red-700 px-4 py-3 rounded-none mb-4">
+                            <div class="flex items-start">
+                                <svg class="w-5 h-5 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>
+                                <p class="font-semibold">{{ session('error') }}</p>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+
+                <form id="consultation-form" class="space-y-6" method="POST" action="{{ route('consulting.request') }}" data-turbo="false">
                     @csrf
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
@@ -193,7 +210,7 @@
                         @enderror
                     </div>
                     <div class="text-center">
-                        <button type="submit" id="consultation-submit" class="bg-brand-primary text-white px-8 py-3 rounded-none hover:bg-brand-dark font-semibold transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                        <button type="submit" id="consultation-submit" class="bg-brand-primary text-white px-8 py-3 rounded-none hover:bg-brand-dark font-semibold transition shadow-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
                             <span id="consultation-submit-text">Request Consultation</span>
                             <span id="consultation-submit-loading" class="hidden">Sending...</span>
                         </button>
@@ -226,7 +243,7 @@
         <h2 class="text-3xl font-bold mb-4">{{ $cta->title }}</h2>
         <p class="text-xl text-gray-200 mb-8 max-w-2xl mx-auto">{{ $cta->content }}</p>
         @if($cta->button_text)
-        <a href="{{ $cta->button_link ?? '#contact' }}" class="inline-block bg-white text-brand-primary px-8 py-3 rounded-none hover:bg-gray-100 font-semibold transition shadow-lg">
+        <a href="{{ $cta->button_link ?? '#contact' }}" class="inline-block bg-white text-brand-primary px-8 py-3 rounded-none hover:bg-gray-100 font-semibold transition shadow-lg cursor-pointer">
             {{ $cta->button_text }}
         </a>
         @endif
@@ -237,7 +254,7 @@
         <p class="text-xl text-gray-200 mb-8 max-w-2xl mx-auto">
             Take the first step towards achieving your goals. Schedule a free consultation to discuss your needs and explore how we can help.
         </p>
-        <a href="#contact" class="inline-block bg-white text-brand-primary px-8 py-3 rounded-none hover:bg-gray-100 font-semibold transition shadow-lg">
+        <a href="#contact" class="inline-block bg-white text-brand-primary px-8 py-3 rounded-none hover:bg-gray-100 font-semibold transition shadow-lg cursor-pointer">
             Get Started Today
         </a>
     </div>
@@ -336,6 +353,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(({ status, data }) => {
                 submitButton.disabled = false;
+                submitButton.classList.remove('btn-loading');
                 submitText.classList.remove('hidden');
                 submitLoading.classList.add('hidden');
 
@@ -351,6 +369,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => {
                 submitButton.disabled = false;
+                submitButton.classList.remove('btn-loading');
                 submitText.classList.remove('hidden');
                 submitLoading.classList.add('hidden');
                 showMessage('An error occurred. Please try again.', 'error');

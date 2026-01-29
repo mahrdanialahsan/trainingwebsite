@@ -82,7 +82,7 @@
         @else
             <div class="bg-white rounded-none shadow-md p-8 text-center">
                 <p class="text-gray-600">You don't have any bookings yet.</p>
-                <a href="{{ route('courses') }}" class="inline-block mt-4 bg-brand-primary text-white px-6 py-2 rounded-none hover:bg-brand-dark">
+                <a href="{{ route('courses') }}" class="inline-block mt-4 bg-brand-primary text-white px-6 py-2 rounded-none hover:bg-brand-dark cursor-pointer">
                     Browse Courses
                 </a>
             </div>
@@ -172,10 +172,10 @@
             </div>
             
             <div class="mt-6 flex flex-wrap gap-4">
-                <button type="button" onclick="openProfileEdit()" class="bg-brand-primary text-white px-6 py-2 rounded-none hover:bg-brand-dark font-semibold transition">
+                <button type="button" onclick="openProfileEdit()" class="bg-brand-primary text-white px-6 py-2 rounded-none hover:bg-brand-dark font-semibold transition cursor-pointer">
                     Edit Profile
                 </button>
-                <button type="button" onclick="openPasswordChange()" class="bg-gray-600 text-white px-6 py-2 rounded-none hover:bg-gray-700 font-semibold transition">
+                <button type="button" onclick="openPasswordChange()" class="bg-gray-600 text-white px-6 py-2 rounded-none hover:bg-gray-700 font-semibold transition cursor-pointer">
                     Change Password
                 </button>
             </div>

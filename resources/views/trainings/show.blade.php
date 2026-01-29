@@ -17,7 +17,7 @@
         @endif
         @if($training->download_pdf_path && $training->download_button_text)
         <div class="mt-6">
-            <a href="{{ asset('storage/' . $training->download_pdf_path) }}" target="_blank" class="inline-block bg-brand-primary text-white px-6 py-3 rounded-none hover:bg-brand-dark text-lg font-semibold transition">
+            <a href="{{ asset('storage/' . $training->download_pdf_path) }}" target="_blank" class="inline-block bg-brand-primary text-white px-6 py-3 rounded-none hover:bg-brand-dark text-lg font-semibold transition cursor-pointer">
                 {{ $training->download_button_text }}
             </a>
         </div>
@@ -120,7 +120,7 @@
 
     <!-- Back Button -->
     <div class="text-center mt-8">
-        <a href="{{ route('trainings.index') }}" class="inline-block bg-gray-200 text-brand-primary px-6 py-3 rounded-none hover:bg-gray-300 font-semibold transition">
+        <a href="{{ route('trainings.index') }}" class="inline-block bg-gray-200 text-brand-primary px-6 py-3 rounded-none hover:bg-gray-300 font-semibold transition cursor-pointer">
             ← Back to Training Programs
         </a>
     </div>

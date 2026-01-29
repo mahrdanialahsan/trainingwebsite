@@ -7,6 +7,19 @@
     <h1 class="text-4xl font-bold text-gray-900 mb-8">Complete Payment</h1>
 
     <div class="bg-white rounded-none shadow-md p-8">
+        @if(session('error'))
+        <div class="bg-red-50 border border-red-200 rounded-none p-4 mb-6">
+            <p class="text-sm text-red-800">{{ session('error') }}</p>
+        </div>
+        @endif
+
+        @if(isset($stripeError) && $stripeError)
+        <div class="bg-amber-50 border border-amber-200 rounded-none p-4 mb-6">
+            <p class="text-sm text-amber-800">{{ $stripeError }}</p>
+            <p class="text-sm text-amber-700 mt-2">You can return to <a href="{{ route('courses') }}" class="underline font-medium">courses</a> or contact support to complete your booking.</p>
+        </div>
+        @endif
+
         <div class="mb-6">
             <h2 class="text-2xl font-semibold mb-4">Booking Summary</h2>
             <div class="bg-gray-50 p-4 rounded-none">
@@ -23,15 +36,15 @@
             <p class="text-3xl font-bold text-brand-primary">${{ number_format($booking->course->price, 2) }}</p>
         </div>
 
-        @if($stripePublicKey)
+        @if($stripePublicKey && $checkoutSessionId && empty($stripeError))
         <div class="mb-6">
             <h2 class="text-2xl font-semibold mb-4">Pay with Credit/Debit Card</h2>
-            <p class="text-gray-600 mb-4">Secure payment</p>
-            <button id="checkout-button" class="w-full bg-brand-primary text-white px-6 py-3 rounded-none hover:bg-brand-dark text-lg font-semibold transition">
+            <p class="text-gray-600 mb-4">Secure payment powered by Stripe.</p>
+            <button id="checkout-button" class="w-full bg-brand-primary text-white px-6 py-3 rounded-none hover:bg-brand-dark text-lg font-semibold transition cursor-pointer" style="cursor: pointer;">
                 Pay ${{ number_format($booking->course->price, 2) }}
             </button>
         </div>
-        @else
+        @elseif(empty($stripeError))
         <div class="bg-yellow-50 border border-yellow-200 rounded-none p-4 mb-6">
             <p class="text-sm text-yellow-800">
                 <strong>Payment system not configured:</strong> Please configure Stripe keys in the admin settings panel.

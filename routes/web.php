@@ -27,6 +27,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\SubscriberController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\ContactController;
+use Illuminate\Support\Facades\Artisan;
 
 // Authentication Routes
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -153,3 +154,88 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::get('change-password', [AdminController::class, 'changePassword'])->name('change-password');
     Route::put('change-password', [AdminController::class, 'updatePassword'])->name('update-password');
 });
+
+Route::get('/clear-cache', function () {
+
+    // Clear application cache
+    Artisan::call('cache:clear');
+
+    // Clear config cache
+    Artisan::call('config:clear');
+
+    // Clear route cache
+    Artisan::call('route:clear');
+
+    // Clear compiled views
+    Artisan::call('view:clear');
+
+    // Optionally, rebuild config cache
+    Artisan::call('config:cache');
+
+    
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'All caches cleared and config rebuilt successfully.'
+    ]);
+})->name('clear-cache');
+
+Route::get('/storage-link', function () {
+    try {
+        $target = storage_path('app/public');
+        $link = public_path('storage');
+        
+        // Check if storage/app/public exists
+        if (!file_exists($target)) {
+            // Create the directory if it doesn't exist
+            if (!mkdir($target, 0755, true)) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Failed to create storage/app/public directory. Please check permissions.'
+                ], 500);
+            }
+        }
+        
+        // Remove existing link or file if it exists
+        if (file_exists($link) || is_link($link)) {
+            if (is_link($link)) {
+                unlink($link);
+            } else {
+                // If it's a directory, we can't remove it - return error
+                if (is_dir($link)) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Storage link already exists as a directory. Please remove it manually first.'
+                    ], 500);
+                }
+                unlink($link);
+            }
+        }
+        
+        // Create symbolic link using PHP's native symlink function
+        // This works better on cPanel than Artisan::call
+        if (@symlink($target, $link)) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Storage link created successfully.',
+                'target' => $target,
+                'link' => $link
+            ]);
+        } else {
+            // Get the last error
+            $error = error_get_last();
+            $errorMessage = $error ? $error['message'] : 'Unknown error';
+            
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to create storage link: ' . $errorMessage,
+                'hint' => 'This may be due to permissions or symlink support being disabled on your server. Try creating the symlink manually via SSH or cPanel File Manager.'
+            ], 500);
+        }
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Error creating storage link: ' . $e->getMessage()
+        ], 500);
+    }
+})->name('storage-link');

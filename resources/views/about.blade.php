@@ -359,7 +359,7 @@
                 </div>
                 <h3 class="text-xl font-bold mb-3">{{ $item->title }}</h3>
                 @if($item->content)
-                    <p class="text-gray-300">{{ $item->content }}</p>
+                    <p class="text-gray-300">{!! $item->content !!}</p>
                 @endif
             </div>
             @endforeach

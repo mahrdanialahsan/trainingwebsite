@@ -1,9 +1,13 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-turbo="false">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    {{-- Disable Turbo/Hotwire for entire admin so add/edit pages and CKEditor always load --}}
+    <meta name="turbo-visit-control" content="reload">
+    <meta name="turbo-cache-control" content="no-cache">
+    <meta name="turbo-root" content="false">
     <title>@yield('title', 'Admin Panel') - {{ config('app.name') }}</title>
     
     {{-- Favicons --}}
@@ -33,10 +37,11 @@
         button, input[type="submit"], input[type="button"], [type="submit"], [type="button"], a.cursor-pointer { cursor: pointer; }
     </style>
     @stack('styles')
-    <!-- CKEditor Rich Text Editor -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ckeditor/4.23.0/ckeditor.js" integrity="sha512-7VX0mm9Rn8i6WX3/A4v4X8X3XkA8k3+E4z8F5k5O8+4B5f5f5O8+4B5f5f5O8+4B5f5f5O8+4B5f5f5O8+4B5f5f5O8=" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    {{-- CKEditor & CKFinder from public_html (local) --}}
+    <script src="{{ asset('ckeditor/ckeditor.js') }}"></script>
+    <script src="{{ asset('ckfinder/ckfinder.js') }}"></script>
 </head>
-<body class="bg-gray-100 overflow-hidden">
+<body class="bg-gray-100 overflow-hidden" data-turbo="false">
     <div class="flex h-screen">
         <!-- Left Sidebar -->
         <aside class="w-64 bg-brand-primary text-white flex flex-col flex-shrink-0 h-full overflow-y-auto">
@@ -49,6 +54,7 @@
             @php
                 $navTraining = request()->routeIs('admin.courses.*', 'admin.bookings.*', 'admin.trainings.*', 'admin.waivers.*');
                 $navContent = request()->routeIs('admin.about.*', 'admin.bios.*', 'admin.faqs.*');
+                $navShop = request()->routeIs('admin.products.*', 'admin.categories.*');
                 $navConsulting = request()->routeIs('admin.consulting-sections.*', 'admin.consultation-requests.*');
                 $navInquiries = request()->routeIs('admin.contact-messages.*');
                 $navUsers = request()->routeIs('admin.users.*', 'admin.subscribers.*');
@@ -88,6 +94,19 @@
                             <a href="{{ route('admin.about.index') }}" class="flex items-center px-3 py-2 text-sm text-gray-300 hover:bg-brand-dark hover:text-white transition rounded-none {{ request()->routeIs('admin.about.*') ? 'bg-brand-dark text-white' : '' }}">About</a>
                             <a href="{{ route('admin.bios.index') }}" class="flex items-center px-3 py-2 text-sm text-gray-300 hover:bg-brand-dark hover:text-white transition rounded-none {{ request()->routeIs('admin.bios.*') ? 'bg-brand-dark text-white' : '' }}">Bios</a>
                             <a href="{{ route('admin.faqs.index') }}" class="flex items-center px-3 py-2 text-sm text-gray-300 hover:bg-brand-dark hover:text-white transition rounded-none {{ request()->routeIs('admin.faqs.*') ? 'bg-brand-dark text-white' : '' }}">FAQs</a>
+                        </div>
+                    </details>
+
+                    {{-- Shop (Products – independent of courses) --}}
+                    <details class="group" {{ $navShop ? 'open' : '' }}>
+                        <summary class="flex items-center px-4 py-3 text-gray-200 hover:bg-brand-dark hover:text-white transition rounded-none cursor-pointer list-none">
+                            <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                            <span class="flex-1">Shop</span>
+                            <svg class="w-4 h-4 transition group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </summary>
+                        <div class="pl-4 ml-5 border-l border-brand-dark space-y-0.5">
+                            <a href="{{ route('admin.categories.index') }}" class="flex items-center px-3 py-2 text-sm text-gray-300 hover:bg-brand-dark hover:text-white transition rounded-none {{ request()->routeIs('admin.categories.*') ? 'bg-brand-dark text-white' : '' }}">Categories</a>
+                            <a href="{{ route('admin.products.index') }}" class="flex items-center px-3 py-2 text-sm text-gray-300 hover:bg-brand-dark hover:text-white transition rounded-none {{ request()->routeIs('admin.products.*') ? 'bg-brand-dark text-white' : '' }}">Products</a>
                         </div>
                     </details>
 
@@ -194,7 +213,7 @@
                     @endif
                 </div>
 
-                <div class="px-4 sm:px-6 lg:px-8 py-8">
+                <div class="px-4 sm:px-6 lg:px-8 py-8" data-turbo="false">
                     @yield('content')
                 </div>
             </main>

@@ -125,27 +125,23 @@
     </div>
 </div>
 @push('js')
-<script src="{{ asset('ckeditor/ckeditor.js') }}"></script>
-<script src="{{ asset('ckfinder/ckfinder.js') }}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        if (typeof CKEDITOR !== 'undefined') {
+        function initCKEditors() {
+            if (typeof CKEDITOR === 'undefined') return false;
             var editors = ['bio', 'credentials', 'experience'];
+            var opts = { height: '300px', filebrowserBrowseUrl: '{{ asset("ckfinder/ckfinder.html") }}', filebrowserImageBrowseUrl: '{{ asset("ckfinder/ckfinder.html?type=Images") }}', filebrowserUploadUrl: '{{ asset("ckfinder/core/connector/php/connector.php") }}?command=QuickUpload&type=Files', filebrowserImageUploadUrl: '{{ asset("ckfinder/core/connector/php/connector.php") }}?command=QuickUpload&type=Images' };
+            var done = 0;
             editors.forEach(function(editorId) {
-                var element = document.getElementById(editorId);
-                if (element && !CKEDITOR.instances[editorId]) {
-                    CKEDITOR.replace(editorId, {
-                        height: '300px',
-                        filebrowserBrowseUrl: '{{ asset("ckfinder/ckfinder.html") }}',
-                        filebrowserImageBrowseUrl: '{{ asset("ckfinder/ckfinder.html?type=Images") }}',
-                        filebrowserFlashBrowseUrl: '{{ asset("ckfinder/ckfinder.html?type=Flash") }}',
-                        filebrowserUploadUrl: '{{ asset("ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files") }}',
-                        filebrowserImageUploadUrl: '{{ asset("ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Images") }}',
-                        filebrowserFlashUploadUrl: '{{ asset("ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Flash") }}'
-                    });
-                }
+                var el = document.getElementById(editorId);
+                if (el && !CKEDITOR.instances[editorId]) { try { CKEDITOR.replace(editorId, opts); done++; } catch (e) {} }
             });
+            return done > 0;
         }
+        initCKEditors();
+        var n = 0;
+        var t = setInterval(function() { if (initCKEditors() || ++n > 20) clearInterval(t); }, 100);
+        window.addEventListener('load', initCKEditors);
         var form = document.querySelector('form');
         if (form) {
             form.addEventListener('submit', function() {

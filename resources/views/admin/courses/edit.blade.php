@@ -7,7 +7,7 @@
     <h1 class="text-3xl font-bold text-gray-900 mb-8">Edit Course</h1>
 
     <div class="bg-white rounded-none shadow p-8">
-        <form method="POST" action="{{ route('admin.courses.update', $course) }}" 
+        <form method="POST" action="{{ route('admin.courses.update', $course) }}" data-turbo="false"
               data-controller="loader"
               data-action="submit->loader#show">
             @csrf
@@ -165,42 +165,35 @@
     </div>
 </div>
 @push('js')
-<script src="{{ asset('ckeditor/ckeditor.js') }}"></script>
-<script src="{{ asset('ckfinder/ckfinder.js') }}"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Initialize CKEditor for long_description
-        if (typeof CKEDITOR !== 'undefined') {
-            var editorId = 'long_description';
-            var element = document.getElementById(editorId);
-            
-            if (element && !CKEDITOR.instances[editorId]) {
-                CKEDITOR.replace(editorId, {
-                    height: '400px',
-                    filebrowserBrowseUrl: '{{ asset("ckfinder/ckfinder.html") }}',
-                    filebrowserImageBrowseUrl: '{{ asset("ckfinder/ckfinder.html?type=Images") }}',
-                    filebrowserFlashBrowseUrl: '{{ asset("ckfinder/ckfinder.html?type=Flash") }}',
-                    filebrowserUploadUrl: '{{ asset("ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files") }}',
-                    filebrowserImageUploadUrl: '{{ asset("ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Images") }}',
-                    filebrowserFlashUploadUrl: '{{ asset("ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Flash") }}'
-                });
-            }
-        }
-
-        // Update CKEditor content before form submit
+(function() {
+    var editorId = 'long_description';
+    var ckfinderBase = '{{ asset("ckfinder/ckfinder.html") }}';
+    var ckfinderImg = '{{ asset("ckfinder/ckfinder.html?type=Images") }}';
+    var connector = '{{ asset("ckfinder/core/connector/php/connector.php") }}';
+    function initCK() {
+        if (typeof CKEDITOR === 'undefined') return false;
+        var el = document.getElementById(editorId);
+        if (!el || CKEDITOR.instances[editorId]) return !!CKEDITOR.instances[editorId];
+        try {
+            CKEDITOR.replace(editorId, { height: '400px', filebrowserBrowseUrl: ckfinderBase, filebrowserImageBrowseUrl: ckfinderImg, filebrowserUploadUrl: connector + '?command=QuickUpload&type=Files', filebrowserImageUploadUrl: connector + '?command=QuickUpload&type=Images' });
+            return true;
+        } catch (e) { return false; }
+    }
+    function bindSubmit() {
         var form = document.querySelector('form');
-        if (form) {
-            form.addEventListener('submit', function() {
-                if (typeof CKEDITOR !== 'undefined') {
-                    for (var instance in CKEDITOR.instances) {
-                        if (CKEDITOR.instances[instance]) {
-                            CKEDITOR.instances[instance].updateElement();
-                        }
-                    }
-                }
-            });
-        }
-    });
+        if (!form || form._ckBound) return;
+        form._ckBound = true;
+        form.addEventListener('submit', function() {
+            if (typeof CKEDITOR !== 'undefined') { for (var k in CKEDITOR.instances) { if (CKEDITOR.instances[k]) CKEDITOR.instances[k].updateElement(); } }
+        });
+    }
+    function run() { initCK(); bindSubmit(); }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() { run(); var n = 0; var t = setInterval(function() { if (initCK() || ++n > 20) clearInterval(t); }, 100); });
+    } else { run(); var n = 0; var t = setInterval(function() { if (initCK() || ++n > 20) clearInterval(t); }, 100); }
+    window.addEventListener('load', run);
+})();
 </script>
 @endpush
 @endsection

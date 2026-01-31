@@ -7,7 +7,7 @@
     <h1 class="text-3xl font-bold text-gray-900 mb-8">Edit About Section</h1>
 
     <div class="bg-white rounded-none shadow p-8">
-        <form method="POST" action="{{ route('admin.about.update', $about) }}" enctype="multipart/form-data">
+        <form method="POST" action="{{ route('admin.about.update', $about) }}" enctype="multipart/form-data" data-turbo="false">
             @csrf
             @method('PUT')
 
@@ -166,27 +166,22 @@
 </div>
 
 @push('js')
-<script src="{{ asset('ckeditor/ckeditor.js') }}"></script>
-<script src="{{ asset('ckfinder/ckfinder.js') }}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize CKEditor
-        if (typeof CKEDITOR !== 'undefined') {
+        function initCKEditor() {
+            if (typeof CKEDITOR === 'undefined') return false;
             var editorId = 'content';
-            var element = document.getElementById(editorId);
-            
-            if (element && !CKEDITOR.instances[editorId]) {
-                CKEDITOR.replace(editorId, {
-                    height: '300px',
-                    filebrowserBrowseUrl: '{{ asset("ckfinder/ckfinder.html") }}',
-                    filebrowserImageBrowseUrl: '{{ asset("ckfinder/ckfinder.html?type=Images") }}',
-                    filebrowserFlashBrowseUrl: '{{ asset("ckfinder/ckfinder.html?type=Flash") }}',
-                    filebrowserUploadUrl: '{{ asset("ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files") }}',
-                    filebrowserImageUploadUrl: '{{ asset("ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Images") }}',
-                    filebrowserFlashUploadUrl: '{{ asset("ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Flash") }}'
-                });
-            }
+            var el = document.getElementById(editorId);
+            if (!el || CKEDITOR.instances[editorId]) return !!CKEDITOR.instances[editorId];
+            try {
+                CKEDITOR.replace(editorId, { height: '300px', filebrowserBrowseUrl: '{{ asset("ckfinder/ckfinder.html") }}', filebrowserImageBrowseUrl: '{{ asset("ckfinder/ckfinder.html?type=Images") }}', filebrowserUploadUrl: '{{ asset("ckfinder/core/connector/php/connector.php") }}?command=QuickUpload&type=Files', filebrowserImageUploadUrl: '{{ asset("ckfinder/core/connector/php/connector.php") }}?command=QuickUpload&type=Images' });
+                return true;
+            } catch (e) { return false; }
         }
+        initCKEditor();
+        var n = 0;
+        var t = setInterval(function() { if (initCKEditor() || ++n > 20) clearInterval(t); }, 100);
+        window.addEventListener('load', initCKEditor);
 
         // Handle section type change
         const sectionType = document.getElementById('section_type');

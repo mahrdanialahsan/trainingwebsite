@@ -36,6 +36,8 @@ class DatabaseSeeder extends Seeder
             TrainingSeeder::class,
             FaqSeeder::class,
             AboutSectionSeeder::class,
+            CategorySeeder::class,
+            ProductSeeder::class,
         ]);
     }
 }

@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Booking;
+use App\Models\Order;
 use App\Models\Payment;
 use App\Models\Setting;
 use App\Mail\BookingConfirmationMail;
+use App\Mail\OrderConfirmationMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -52,8 +54,32 @@ class WebhookController extends Controller
 
     private function handleCheckoutSessionCompleted($session)
     {
+        $orderId = $session->metadata->order_id ?? null;
         $bookingId = $session->metadata->booking_id ?? null;
-        
+
+        // Shop order
+        if ($orderId) {
+            $order = Order::find($orderId);
+            if ($order && !$order->isPaid()) {
+                $order->update(['status' => 'paid']);
+                
+                // Send order confirmation email
+                try {
+                    $order->refresh();
+                    $order->load('items');
+                    Mail::to($order->email)->send(new OrderConfirmationMail($order));
+                } catch (\Exception $e) {
+                    \Log::error('Failed to send order confirmation email via webhook: ' . $e->getMessage(), [
+                        'order_id' => $order->id,
+                        'email' => $order->email,
+                        'exception' => $e
+                    ]);
+                }
+            }
+            return;
+        }
+
+        // Booking
         if (!$bookingId) {
             return;
         }
@@ -92,8 +118,6 @@ class WebhookController extends Controller
             $booking->load(['course', 'payment']);
             Mail::to($booking->email)->send(new BookingConfirmationMail($booking));
         } catch (\Exception $e) {
-            // Log error but don't fail the webhook
-            // Note: Webhook errors won't show on UI since it's server-to-server
             \Log::error('Failed to send booking confirmation email via webhook: ' . $e->getMessage(), [
                 'booking_id' => $booking->id,
                 'email' => $booking->email,

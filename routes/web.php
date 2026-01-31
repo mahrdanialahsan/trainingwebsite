@@ -22,11 +22,16 @@ use App\Http\Controllers\Admin\FaqController as AdminFaqController;
 use App\Http\Controllers\Admin\ConsultingSectionController;
 use App\Http\Controllers\Admin\ConsultationRequestController;
 use App\Http\Controllers\Admin\ContactMessageController;
+use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\SubscriberController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\ShopController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
 use Illuminate\Support\Facades\Artisan;
 
 // Authentication Routes
@@ -62,21 +67,30 @@ Route::get('/trainings', [TrainingController::class, 'index'])->name('trainings.
 Route::get('/trainings/{slug}', [TrainingController::class, 'show'])->name('trainings.show');
 Route::get('/courses', [CourseController::class, 'index'])->name('courses');
 Route::get('/courses/{slug}', [CourseController::class, 'show'])->name('courses.show');
+Route::get('/shop', [ShopController::class, 'index'])->name('shop');
+Route::get('/shop/{slug}', [ShopController::class, 'show'])->name('shop.show');
+
+// Cart & checkout (guest allowed)
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.add');
+Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
+Route::delete('/cart/remove/{product}', [CartController::class, 'remove'])->name('cart.remove');
+Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout.show');
+Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
 Route::get('/consulting', [ConsultingController::class, 'index'])->name('consulting');
 Route::post('/consulting/request', [ConsultingController::class, 'store'])->name('consulting.request');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
-// Booking Routes (Authentication Required)
-Route::middleware('auth')->group(function () {
-    Route::get('/book/{slug}', [BookingController::class, 'create'])->name('bookings.create');
-    Route::post('/bookings/{slug}', [BookingController::class, 'store'])->name('bookings.store');
-    Route::get('/bookings/{booking}/waiver', [BookingController::class, 'showWaiver'])->name('bookings.waiver');
-    Route::post('/bookings/{booking}/accept-waiver', [BookingController::class, 'acceptWaiver'])->name('bookings.accept-waiver');
-    Route::get('/bookings/{booking}/payment', [BookingController::class, 'showPayment'])->name('bookings.payment');
-    Route::post('/bookings/{booking}/payment', [BookingController::class, 'processPayment'])->name('bookings.process-payment');
-    Route::get('/bookings/{booking}/confirmation', [BookingController::class, 'confirmation'])->name('bookings.confirmation');
-});
+// Booking Routes (Guest checkout allowed—no login required)
+Route::get('/book/{slug}', [BookingController::class, 'create'])->name('bookings.create');
+Route::post('/bookings/{slug}', [BookingController::class, 'store'])->name('bookings.store');
+Route::get('/bookings/{booking}/waiver', [BookingController::class, 'showWaiver'])->name('bookings.waiver');
+Route::post('/bookings/{booking}/accept-waiver', [BookingController::class, 'acceptWaiver'])->name('bookings.accept-waiver');
+Route::get('/bookings/{booking}/payment', [BookingController::class, 'showPayment'])->name('bookings.payment');
+Route::post('/bookings/{booking}/payment', [BookingController::class, 'processPayment'])->name('bookings.process-payment');
+Route::get('/bookings/{booking}/confirmation', [BookingController::class, 'confirmation'])->name('bookings.confirmation');
 
 // Webhooks
 Route::post('/webhooks/stripe', [\App\Http\Controllers\WebhookController::class, 'stripe'])->name('webhooks.stripe');
@@ -127,6 +141,10 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     // Contact Messages (from Contact Us form)
     Route::get('/contact-messages', [ContactMessageController::class, 'index'])->name('contact-messages.index');
     Route::get('/contact-messages/{contact_message}', [ContactMessageController::class, 'show'])->name('contact-messages.show');
+
+    // Shop Products & Categories (e.g. shirts, merchandise – independent of courses)
+    Route::resource('categories', AdminCategoryController::class);
+    Route::resource('products', AdminProductController::class);
 
     // Trainings Management
     Route::resource('trainings', AdminTrainingController::class);

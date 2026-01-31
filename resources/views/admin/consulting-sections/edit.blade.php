@@ -7,7 +7,7 @@
     <h1 class="text-3xl font-bold text-gray-900 mb-8">Edit Consulting Section</h1>
 
     <div class="bg-white rounded-none shadow p-8">
-        <form method="POST" action="{{ route('admin.consulting-sections.update', $consultingSection) }}">
+        <form method="POST" action="{{ route('admin.consulting-sections.update', $consultingSection) }}" data-turbo="false">
             @csrf
             @method('PUT')
 

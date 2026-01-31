@@ -36,6 +36,29 @@
         .mobile-nav-open .js-mobile-close-icon { display: block; }
         /* Hand cursor on buttons and submit inputs (works with or without Vite) */
         button, input[type="submit"], input[type="button"], [type="submit"], [type="button"], a.cursor-pointer { cursor: pointer; }
+        /* Cart icon bump when item added (no reload) */
+        @keyframes cart-bump {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.25); }
+        }
+        #nav-cart-icon.cart-bump-animate { animation: cart-bump 0.4s ease; }
+        /* Toast for add-to-cart feedback – always centered in viewport */
+        #add-to-cart-toast {
+            position: fixed;
+            left: 50%;
+            top: 3rem;
+            z-index: 9999;
+            max-width: calc(100vw - 2rem);
+            transition: opacity 0.2s, transform 0.2s;
+            transform: translateX(-50%) translateY(10px);
+            opacity: 0;
+            pointer-events: none;
+        }
+        #add-to-cart-toast.toast-visible {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+            pointer-events: auto;
+        }
     </style>
     @stack('styles')
 </head>
@@ -78,8 +101,8 @@
                         </div>
                     </div>
                     <a href="{{ route('courses') }}" class="text-brand-primary font-medium hover:text-brand-dark transition" data-turbo-action="advance">Courses</a>
+                    <a href="{{ route('shop') }}" class="text-brand-primary font-medium hover:text-brand-dark transition" data-turbo-action="advance">Shop</a>
                     <a href="{{ route('consulting') }}" class="text-brand-primary font-medium hover:text-brand-dark transition" data-turbo-action="advance">Consulting</a>
-                    <a href="{{ route('faqs.index') }}" class="text-brand-primary font-medium hover:text-brand-dark transition" data-turbo-action="advance">FAQs</a>
                     <a href="{{ route('contact') }}" class="text-brand-primary font-medium hover:text-brand-dark transition" data-turbo-action="advance">Contact</a>
                     @auth
                     <div class="relative group">
@@ -111,6 +134,21 @@
                     <a href="{{ route('login') }}" class="text-brand-primary font-medium hover:text-brand-dark transition" data-turbo-action="advance">Sign In</a>
                     <a href="{{ route('register') }}" class="bg-brand-primary text-white px-4 py-2 rounded-none hover:bg-brand-dark transition cursor-pointer" data-turbo-action="advance">Sign Up</a>
                     @endauth
+                    {{-- Cart icon (rightmost) with dropdown – badge above icon --}}
+                    <div class="relative group ml-2 flex flex-col items-center">
+                        <span id="nav-cart-count" class="mb-0.5 bg-brand-primary text-white text-xs font-bold rounded-full h-4 min-w-[1rem] inline-flex items-center justify-center px-1 {{ (isset($cartCount) && $cartCount > 0) ? '' : 'hidden' }}">{{ isset($cartCount) && $cartCount > 0 ? ($cartCount > 99 ? '99+' : $cartCount) : '0' }}</span>
+                        <a href="{{ route('cart.index') }}" id="nav-cart-icon" class="text-brand-primary font-medium hover:text-brand-dark transition flex items-center  -m-2 rounded" data-turbo-action="advance" aria-label="Cart">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                        </a>
+                        <div class="absolute right-0 top-full pt-2 w-80 max-w-[90vw] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 pointer-events-none group-hover:pointer-events-auto">
+                            <div class="bg-white shadow-lg border border-gray-200 rounded-none overflow-hidden">
+                                <div class="px-4 py-3 border-b border-gray-200 font-semibold text-gray-900">Your cart</div>
+                                <div id="cart-dropdown-content">
+                                    @include('layouts.partials.cart-dropdown-content', ['items' => $cartDropdownItems ?? [], 'subtotal' => $cartSubtotal ?? 0])
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 {{-- Mobile menu button --}}
                 <button type="button" id="mobile-menu-btn" class="lg:hidden p-2 -mr-2 text-brand-primary hover:text-brand-dark transition cursor-pointer" aria-label="Toggle menu">
@@ -136,8 +174,12 @@
                     @endforeach
                 @endif
                 <a href="{{ route('courses') }}" class="block py-2 text-brand-primary font-medium hover:text-brand-dark transition mobile-menu-link" data-turbo-action="advance">Courses</a>
+                <a href="{{ route('shop') }}" class="block py-2 text-brand-primary font-medium hover:text-brand-dark transition mobile-menu-link" data-turbo-action="advance">Shop</a>
+                <a href="{{ route('cart.index') }}" class="block py-2 text-brand-primary font-medium hover:text-brand-dark transition mobile-menu-link flex items-center" data-turbo-action="advance">
+                    Cart
+                    <span id="mobile-cart-count" class="ml-2 bg-brand-primary text-white text-xs font-bold rounded-full h-5 min-w-[1.25rem] inline-flex items-center justify-center px-1 {{ (isset($cartCount) && $cartCount > 0) ? '' : 'hidden' }}">{{ isset($cartCount) && $cartCount > 0 ? ($cartCount > 99 ? '99+' : $cartCount) : '0' }}</span>
+                </a>
                 <a href="{{ route('consulting') }}" class="block py-2 text-brand-primary font-medium hover:text-brand-dark transition mobile-menu-link" data-turbo-action="advance">Consulting</a>
-                <a href="{{ route('faqs.index') }}" class="block py-2 text-brand-primary font-medium hover:text-brand-dark transition mobile-menu-link" data-turbo-action="advance">FAQs</a>
                 <a href="{{ route('contact') }}" class="block py-2 text-brand-primary font-medium hover:text-brand-dark transition mobile-menu-link" data-turbo-action="advance">Contact</a>
                 @auth
                 <div class="border-t border-gray-200 pt-3 mt-3 space-y-1">
@@ -159,6 +201,12 @@
             </div>
         </div>
     </nav>
+
+    {{-- Toast: Added to cart (no reload) – positioned via #add-to-cart-toast CSS --}}
+    <div id="add-to-cart-toast" class="rounded-none bg-brand-primary text-white px-6 py-3 shadow-lg font-medium text-sm flex items-center gap-2 whitespace-nowrap" role="status" aria-live="polite">
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+        <span id="add-to-cart-toast-message">Added to cart</span>
+    </div>
 
     {{-- Global Turbo Loader --}}
     <div id="turbo-loader" class="fixed top-0 left-0 right-0 bg-brand-primary text-white py-2 text-center z-50 hidden">
@@ -191,6 +239,8 @@
                     <ul class="space-y-2 text-gray-300">
                         <li><a href="{{ route('home') }}" class="hover:text-white transition">Home</a></li>
                         <li><a href="{{ route('courses') }}" class="hover:text-white transition">Courses</a></li>
+                        <li><a href="{{ route('shop') }}" class="hover:text-white transition">Shop</a></li>
+                        <li><a href="{{ route('cart.index') }}" class="hover:text-white transition">Cart</a></li>
                         <li><a href="{{ route('about') }}" class="hover:text-white transition">About</a></li>
                         <li><a href="{{ route('consulting') }}" class="hover:text-white transition">Consulting</a></li>
                         <li><a href="{{ route('contact') }}" class="hover:text-white transition">Contact</a></li>
@@ -366,6 +416,139 @@ submitButton.disabled = false;
         initMobileMenu();
     }
     document.addEventListener('turbo:load', initMobileMenu);
+
+    // Add to cart via AJAX (no page reload) – single listener to avoid adding multiple times (fixes "add 9" bug)
+    function initAddToCart() {
+        if (document._addToCartSubmitInited) return;
+        document._addToCartSubmitInited = true;
+
+        document.addEventListener('submit', function(e) {
+            var form = e.target;
+            if (!form || form.method.toLowerCase() !== 'post' || !form.action || form.action.indexOf('/cart/add/') === -1) return;
+            e.preventDefault();
+            e.stopPropagation();
+
+            var btn = form.querySelector('button[type="submit"]');
+            if (btn) {
+                if (btn.disabled) return;
+                btn.disabled = true;
+                btn.classList.add('opacity-75', 'cursor-wait');
+            }
+
+            var qtyInput = form.querySelector('input[name="quantity"]');
+            var qty = 1;
+            if (qtyInput && qtyInput.value !== '') {
+                var v = parseInt(qtyInput.value, 10);
+                if (!isNaN(v) && v >= 1 && v <= 99) qty = v;
+            }
+            var body = new FormData(form);
+            body.set('quantity', String(qty));
+            var token = document.querySelector('meta[name="csrf-token"]') && document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            if (token) body.set('_token', token);
+
+            fetch(form.action, {
+                method: 'POST',
+                body: body,
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                credentials: 'same-origin'
+            })
+            .then(function(r) { return r.json().then(function(data) { return { ok: r.ok, status: r.status, data: data }; }).catch(function() { return { ok: r.ok, status: r.status, data: {} }; }); })
+            .then(function(result) {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-75', 'cursor-wait');
+                }
+                if (result.ok && result.data && result.data.success) {
+                    var count = result.data.cart_count != null ? result.data.cart_count : 0;
+                    document.querySelectorAll('#nav-cart-count, #mobile-cart-count').forEach(function(el) {
+                        el.textContent = count > 99 ? '99+' : count;
+                        el.classList.toggle('hidden', count <= 0);
+                    });
+                    if (result.data.dropdown_html) {
+                        var dropEl = document.getElementById('cart-dropdown-content');
+                        if (dropEl) {
+                            dropEl.innerHTML = result.data.dropdown_html;
+                            initCartDropdownRemove();
+                        }
+                    }
+                    var iconEl = document.getElementById('nav-cart-icon');
+                    if (iconEl) {
+                        iconEl.classList.remove('cart-bump-animate');
+                        iconEl.offsetHeight;
+                        iconEl.classList.add('cart-bump-animate');
+                        setTimeout(function() { iconEl.classList.remove('cart-bump-animate'); }, 400);
+                    }
+                    var toast = document.getElementById('add-to-cart-toast');
+                    var toastMsg = document.getElementById('add-to-cart-toast-message');
+                    if (toast && toastMsg) {
+                        toastMsg.textContent = result.data.message || 'Added to cart';
+                        toast.classList.add('toast-visible');
+                        setTimeout(function() { toast.classList.remove('toast-visible'); }, 2500);
+                    }
+                } else {
+                    var msg = (result.data && result.data.message) ? result.data.message : 'Could not add to cart.';
+                    var toast = document.getElementById('add-to-cart-toast');
+                    var toastMsg = document.getElementById('add-to-cart-toast-message');
+                    if (toast && toastMsg) {
+                        toastMsg.textContent = msg;
+                        toast.classList.add('toast-visible');
+                        setTimeout(function() { toast.classList.remove('toast-visible'); }, 3000);
+                    }
+                }
+            })
+            .catch(function() {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-75', 'cursor-wait');
+                }
+                var toast = document.getElementById('add-to-cart-toast');
+                var toastMsg = document.getElementById('add-to-cart-toast-message');
+                if (toast && toastMsg) {
+                    toastMsg.textContent = 'Something went wrong. Please try again.';
+                    toast.classList.add('toast-visible');
+                    setTimeout(function() { toast.classList.remove('toast-visible'); }, 3000);
+                }
+            });
+        });
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initAddToCart);
+    } else {
+        initAddToCart();
+    }
+    document.addEventListener('turbo:load', initAddToCart);
+
+    function initCartDropdownRemove() {
+        var token = document.querySelector('meta[name="csrf-token"]') && document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        document.querySelectorAll('.cart-dropdown-remove-btn').forEach(function(btn) {
+            if (btn._cartRemoveInited) return;
+            btn._cartRemoveInited = true;
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var url = this.getAttribute('data-url');
+                if (!url) return;
+                fetch(url, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': token,
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    credentials: 'same-origin'
+                }).then(function() { window.location.reload(); }).catch(function() { window.location.reload(); });
+            });
+        });
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initCartDropdownRemove);
+    } else {
+        initCartDropdownRemove();
+    }
+    document.addEventListener('turbo:load', initCartDropdownRemove);
     </script>
 </body>
 </html>

@@ -7,7 +7,7 @@
     <h1 class="text-3xl font-bold text-gray-900 mb-8">Create New Waiver</h1>
 
     <div class="bg-white rounded-none shadow p-8">
-        <form method="POST" action="{{ route('admin.waivers.store') }}" enctype="multipart/form-data">
+        <form method="POST" action="{{ route('admin.waivers.store') }}" enctype="multipart/form-data" data-turbo="false">
             @csrf
 
             <div class="mb-6">
@@ -59,4 +59,53 @@
         </form>
     </div>
 </div>
+
+@push('scripts')
+<script>
+(function() {
+    var editorId = 'content';
+    function initCKEditor() {
+        if (typeof CKEDITOR === 'undefined') return false;
+        var el = document.getElementById(editorId);
+        if (!el || CKEDITOR.instances[editorId]) return !!CKEDITOR.instances[editorId];
+        try {
+            CKEDITOR.replace(editorId, { height: 300 });
+            return true;
+        } catch (e) { return false; }
+    }
+    function bindFormSubmit() {
+        var form = document.querySelector('form');
+        if (!form || form._ckBound) return;
+        form._ckBound = true;
+        form.addEventListener('submit', function() {
+            if (typeof CKEDITOR !== 'undefined') {
+                for (var k in CKEDITOR.instances) {
+                    if (CKEDITOR.instances[k]) CKEDITOR.instances[k].updateElement();
+                }
+            }
+        });
+    }
+    function run() {
+        initCKEditor();
+        bindFormSubmit();
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            run();
+            var n = 0;
+            var t = setInterval(function() {
+                if (initCKEditor() || ++n > 20) clearInterval(t);
+            }, 100);
+        });
+    } else {
+        run();
+        var n = 0;
+        var t = setInterval(function() {
+            if (initCKEditor() || ++n > 20) clearInterval(t);
+        }, 100);
+    }
+    window.addEventListener('load', run);
+})();
+</script>
+@endpush
 @endsection

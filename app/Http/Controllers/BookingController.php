@@ -48,7 +48,7 @@ class BookingController extends Controller
         ]);
 
         $booking = Booking::create([
-            'user_id' => auth()->id(),
+            'user_id' => auth()->check() ? auth()->id() : null,
             'course_id' => $course->id,
             'first_name' => $validated['first_name'],
             'last_name' => $validated['last_name'],

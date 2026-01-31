@@ -7,7 +7,7 @@
     <h1 class="text-3xl font-bold text-gray-900 mb-8">Edit FAQ</h1>
 
     <div class="bg-white rounded-none shadow p-8">
-        <form method="POST" action="{{ route('admin.faqs.update', $faq) }}">
+        <form method="POST" action="{{ route('admin.faqs.update', $faq) }}" data-turbo="false">
             @csrf
             @method('PUT')
 

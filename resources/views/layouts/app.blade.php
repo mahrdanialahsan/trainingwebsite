@@ -101,9 +101,9 @@
                         </div>
                     </div>
                     <a href="{{ route('courses') }}" class="text-brand-primary font-medium hover:text-brand-dark transition" data-turbo-action="advance">Courses</a>
-                    <a href="{{ route('shop') }}" class="text-brand-primary font-medium hover:text-brand-dark transition" data-turbo-action="advance">Shop</a>
                     <a href="{{ route('consulting') }}" class="text-brand-primary font-medium hover:text-brand-dark transition" data-turbo-action="advance">Consulting</a>
                     <a href="{{ route('contact') }}" class="text-brand-primary font-medium hover:text-brand-dark transition" data-turbo-action="advance">Contact</a>
+                    <a href="{{ route('shop') }}" class="text-brand-primary font-medium hover:text-brand-dark transition" data-turbo-action="advance">Shop</a>
                     @auth
                     <div class="relative group">
                         <a href="{{ route('dashboard') }}" class="text-brand-primary font-medium hover:text-brand-dark transition flex items-center">
@@ -131,8 +131,8 @@
                         </div>
                     </div>
                     @else
-                    <a href="{{ route('login') }}" class="text-brand-primary font-medium hover:text-brand-dark transition" data-turbo-action="advance">Sign In</a>
-                    <a href="{{ route('register') }}" class="bg-brand-primary text-white px-4 py-2 rounded-none hover:bg-brand-dark transition cursor-pointer" data-turbo-action="advance">Sign Up</a>
+                    {{-- <a href="{{ route('login') }}" class="text-brand-primary font-medium hover:text-brand-dark transition" data-turbo-action="advance">Sign In</a> --}}
+                    {{-- <a href="{{ route('register') }}" class="bg-brand-primary text-white px-4 py-2 rounded-none hover:bg-brand-dark transition cursor-pointer" data-turbo-action="advance">Sign Up</a> --}}
                     @endauth
                     {{-- Cart icon (rightmost) with dropdown – badge above icon --}}
                     <div class="relative group ml-2 flex flex-col items-center">
@@ -193,10 +193,10 @@
                     </form>
                 </div>
                 @else
-                <div class="border-t border-gray-200 pt-3 mt-3 flex flex-col gap-2">
+                {{-- <div class="border-t border-gray-200 pt-3 mt-3 flex flex-col gap-2">
                     <a href="{{ route('login') }}" class="block py-2 text-brand-primary font-medium hover:text-brand-dark transition text-center mobile-menu-link" data-turbo-action="advance">Sign In</a>
                     <a href="{{ route('register') }}" class="block py-2 bg-brand-primary text-white text-center font-medium hover:bg-brand-dark transition cursor-pointer mobile-menu-link" data-turbo-action="advance">Sign Up</a>
-                </div>
+                </div> --}}
                 @endauth
             </div>
         </div>

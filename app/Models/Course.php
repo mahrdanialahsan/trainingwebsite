@@ -71,6 +71,20 @@ class Course extends Model
         return $this->hasMany(Booking::class);
     }
 
+    /**
+     * Get the full URL for the thumbnail image (supports both legacy public paths and Storage uploads).
+     */
+    public function getThumbnailUrlAttribute(): ?string
+    {
+        if (!$this->thumbnail_image) {
+            return null;
+        }
+        if (str_starts_with($this->thumbnail_image, 'courses/')) {
+            return asset('storage/' . $this->thumbnail_image);
+        }
+        return asset($this->thumbnail_image);
+    }
+
     public function isUpcoming(): bool
     {
         return $this->status === 'upcoming' && $this->date >= now()->toDateString();

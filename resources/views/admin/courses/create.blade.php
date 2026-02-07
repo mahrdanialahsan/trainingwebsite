@@ -7,7 +7,7 @@
     <h1 class="text-3xl font-bold text-gray-900 mb-8">Create New Course</h1>
 
     <div class="bg-white rounded-none shadow p-8">
-        <form method="POST" action="{{ route('admin.courses.store') }}" data-turbo="false"
+        <form method="POST" action="{{ route('admin.courses.store') }}" enctype="multipart/form-data" data-turbo="false"
               data-controller="loader"
               data-action="submit->loader#show">
             @csrf
@@ -51,18 +51,9 @@
 
             <div class="mb-6">
                 <label for="thumbnail_image" class="block text-sm font-medium text-gray-700 mb-2">Thumbnail Image</label>
-                <select name="thumbnail_image" id="thumbnail_image"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-none focus:outline-none focus:ring-2 focus:ring-brand-primary">
-                    <option value="">No Image</option>
-                    <option value="images/thumbnails/image01.png" {{ old('thumbnail_image') === 'images/thumbnails/image01.png' ? 'selected' : '' }}>Image 01</option>
-                    <option value="images/thumbnails/image02.png" {{ old('thumbnail_image') === 'images/thumbnails/image02.png' ? 'selected' : '' }}>Image 02</option>
-                    <option value="images/thumbnails/image03.png" {{ old('thumbnail_image') === 'images/thumbnails/image03.png' ? 'selected' : '' }}>Image 03</option>
-                    <option value="images/thumbnails/image04.png" {{ old('thumbnail_image') === 'images/thumbnails/image04.png' ? 'selected' : '' }}>Image 04</option>
-                    <option value="images/thumbnails/image05.png" {{ old('thumbnail_image') === 'images/thumbnails/image05.png' ? 'selected' : '' }}>Image 05</option>
-                    <option value="images/thumbnails/image06.png" {{ old('thumbnail_image') === 'images/thumbnails/image06.png' ? 'selected' : '' }}>Image 06</option>
-                    <option value="images/thumbnails/image07.png" {{ old('thumbnail_image') === 'images/thumbnails/image07.png' ? 'selected' : '' }}>Image 07</option>
-                    <option value="images/thumbnails/image08.png" {{ old('thumbnail_image') === 'images/thumbnails/image08.png' ? 'selected' : '' }}>Image 08</option>
-                </select>
+                <input type="file" name="thumbnail_image" id="thumbnail_image" accept="image/jpeg,image/png,image/jpg,image/gif,image/webp"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-none focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                <p class="text-sm text-gray-500 mt-1">JPG, PNG, GIF or WebP. Max 5 MB.</p>
                 @error('thumbnail_image')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror

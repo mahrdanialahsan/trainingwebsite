@@ -7,7 +7,7 @@
     <div class="bg-white rounded-none shadow-md overflow-hidden">
         @if($course->thumbnail_image)
         <div class="w-full h-64 md:h-96 overflow-hidden bg-gray-100 flex items-center justify-center">
-            <img src="{{ asset($course->thumbnail_image) }}" alt="{{ $course->title }}" class="w-full h-full object-contain">
+            <img src="{{ $course->thumbnail_url }}" alt="{{ $course->title }}" class="w-full h-full object-contain">
         </div>
         @endif
         <div class="p-8">

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Course;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use HotwiredLaravel\TurboLaravel\Facades\TurboStream;
 
 class CourseController extends Controller
@@ -27,7 +28,7 @@ class CourseController extends Controller
             'slug' => 'nullable|string|max:255|unique:courses,slug',
             'description' => 'nullable|string',
             'long_description' => 'nullable|string',
-            'thumbnail_image' => 'nullable|string',
+            'thumbnail_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'date' => 'required|date',
             'start_time' => 'required',
             'end_time' => 'nullable',
@@ -35,11 +36,20 @@ class CourseController extends Controller
             'max_participants' => 'nullable|integer|min:1',
             'status' => 'required|in:upcoming,active,completed,cancelled',
             'is_active' => 'boolean',
+        ], [
+            'thumbnail_image.image' => 'The file must be an image.',
+            'thumbnail_image.max' => 'The image may not be greater than 5 MB.',
         ]);
 
         // Auto-generate slug if not provided
         if (empty($validated['slug'])) {
             $validated['slug'] = \Illuminate\Support\Str::slug($validated['title']);
+        }
+
+        if ($request->hasFile('thumbnail_image')) {
+            $validated['thumbnail_image'] = $request->file('thumbnail_image')->store('courses', 'public');
+        } else {
+            $validated['thumbnail_image'] = null;
         }
 
         $course = Course::create($validated);
@@ -76,7 +86,8 @@ class CourseController extends Controller
             'slug' => 'nullable|string|max:255|unique:courses,slug,' . $course->id,
             'description' => 'nullable|string',
             'long_description' => 'nullable|string',
-            'thumbnail_image' => 'nullable|string',
+            'thumbnail_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'remove_thumbnail' => 'nullable|boolean',
             'date' => 'required|date',
             'start_time' => 'required',
             'end_time' => 'nullable',
@@ -84,6 +95,9 @@ class CourseController extends Controller
             'max_participants' => 'nullable|integer|min:1',
             'status' => 'required|in:upcoming,active,completed,cancelled',
             'is_active' => 'boolean',
+        ], [
+            'thumbnail_image.image' => 'The file must be an image.',
+            'thumbnail_image.max' => 'The image may not be greater than 5 MB.',
         ]);
 
         // Auto-generate slug if not provided and title changed
@@ -91,6 +105,21 @@ class CourseController extends Controller
             $validated['slug'] = \Illuminate\Support\Str::slug($validated['title']);
         }
 
+        if ($request->boolean('remove_thumbnail')) {
+            if ($course->thumbnail_image && str_starts_with($course->thumbnail_image, 'courses/') && Storage::disk('public')->exists($course->thumbnail_image)) {
+                Storage::disk('public')->delete($course->thumbnail_image);
+            }
+            $validated['thumbnail_image'] = null;
+        } elseif ($request->hasFile('thumbnail_image')) {
+            if ($course->thumbnail_image && str_starts_with($course->thumbnail_image, 'courses/') && Storage::disk('public')->exists($course->thumbnail_image)) {
+                Storage::disk('public')->delete($course->thumbnail_image);
+            }
+            $validated['thumbnail_image'] = $request->file('thumbnail_image')->store('courses', 'public');
+        } else {
+            $validated['thumbnail_image'] = $course->thumbnail_image;
+        }
+
+        unset($validated['remove_thumbnail']);
         $course->update($validated);
 
         // Support Turbo Stream responses
@@ -110,6 +139,9 @@ class CourseController extends Controller
     public function destroy(Course $course)
     {
         $courseId = $course->id;
+        if ($course->thumbnail_image && str_starts_with($course->thumbnail_image, 'courses/') && Storage::disk('public')->exists($course->thumbnail_image)) {
+            Storage::disk('public')->delete($course->thumbnail_image);
+        }
         $course->delete();
 
         // Support Turbo Stream responses

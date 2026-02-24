@@ -53,7 +53,7 @@
             <!-- Navigation Menu -->
             @php
                 $navTraining = request()->routeIs('admin.courses.*', 'admin.bookings.*', 'admin.trainings.*', 'admin.waivers.*');
-                $navContent = request()->routeIs('admin.about.*', 'admin.bios.*', 'admin.faqs.*');
+                $navContent = request()->routeIs('admin.about.*', 'admin.bios.*', 'admin.faqs.*', 'admin.home.*');
                 $navShop = request()->routeIs('admin.products.*', 'admin.categories.*');
                 $navConsulting = request()->routeIs('admin.consulting-sections.*', 'admin.consultation-requests.*');
                 $navInquiries = request()->routeIs('admin.contact-messages.*');
@@ -91,6 +91,7 @@
                             <svg class="w-4 h-4 transition group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </summary>
                         <div class="pl-4 ml-5 border-l border-brand-dark space-y-0.5">
+                            <a href="{{ route('admin.home.edit') }}" class="flex items-center px-3 py-2 text-sm text-gray-300 hover:bg-brand-dark hover:text-white transition rounded-none {{ request()->routeIs('admin.home.*') ? 'bg-brand-dark text-white' : '' }}">Home</a>
                             <a href="{{ route('admin.about.index') }}" class="flex items-center px-3 py-2 text-sm text-gray-300 hover:bg-brand-dark hover:text-white transition rounded-none {{ request()->routeIs('admin.about.*') ? 'bg-brand-dark text-white' : '' }}">About</a>
                             <a href="{{ route('admin.bios.index') }}" class="flex items-center px-3 py-2 text-sm text-gray-300 hover:bg-brand-dark hover:text-white transition rounded-none {{ request()->routeIs('admin.bios.*') ? 'bg-brand-dark text-white' : '' }}">Bios</a>
                             <a href="{{ route('admin.faqs.index') }}" class="flex items-center px-3 py-2 text-sm text-gray-300 hover:bg-brand-dark hover:text-white transition rounded-none {{ request()->routeIs('admin.faqs.*') ? 'bg-brand-dark text-white' : '' }}">FAQs</a>

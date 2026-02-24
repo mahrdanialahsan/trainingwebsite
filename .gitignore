@@ -5,9 +5,7 @@
 /public_html/storage
 /storage/*.key
 /vendor
-.env
 .env.backup
-.env.production
 .phpunit.result.cache
 Homestead.json
 Homestead.yaml
@@ -62,3 +60,6 @@ Thumbs.db
 # Misc
 /.phpunit.cache
 /.phpunit.result.cache
+temp_auto_push.bat
+temp_interactive_push.bat
+config.bat

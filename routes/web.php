@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\BookingController as AdminBookingController;
 use App\Http\Controllers\Admin\WaiverController;
 use App\Http\Controllers\Admin\BioController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\HomeContentController;
 use App\Http\Controllers\Admin\AboutController as AdminAboutController;
 use App\Http\Controllers\Admin\TrainingController as AdminTrainingController;
 use App\Http\Controllers\Admin\FaqController as AdminFaqController;
@@ -124,6 +125,10 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
     Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
     
+    // Home Page Content (Website Content)
+    Route::get('/home', [HomeContentController::class, 'edit'])->name('home.edit');
+    Route::put('/home', [HomeContentController::class, 'update'])->name('home.update');
+
     // About Page Management
     Route::resource('about', AdminAboutController::class);
     

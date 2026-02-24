@@ -1,182 +1,22 @@
 @extends('layouts.admin')
 
-@section('title', 'Settings')
+@section('title', 'Home Page Content')
 
 @section('content')
 <div class="max-w-4xl">
-    <h1 class="text-3xl font-bold text-gray-900 mb-8">Settings</h1>
+    <h1 class="text-3xl font-bold text-gray-900 mb-8">Home Page Content</h1>
 
-    <form method="POST" action="{{ route('admin.settings.update') }}">
+    @if(session('success'))
+        <div class="bg-green-100 border border-green-200 text-green-800 px-4 py-3 rounded-none mb-6">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    <form method="POST" action="{{ route('admin.home.update') }}" enctype="multipart/form-data" data-turbo="false">
         @csrf
         @method('PUT')
 
-        <!-- General Settings -->
         <div class="bg-white rounded-none shadow p-8 mb-6">
-            <h2 class="text-2xl font-bold text-gray-900 mb-6">General Settings</h2>
-
-            <div class="mb-6">
-                <label for="tagline" class="block text-sm font-medium text-gray-700 mb-2">Tagline</label>
-                <input type="text" name="tagline" id="tagline"
-                       class="w-full px-3 py-2 border border-gray-300 rounded-none focus:outline-none focus:ring-2 focus:ring-brand-primary"
-                       value="{{ old('tagline', $tagline) }}"
-                       placeholder="Professional training and consulting services.">
-                @error('tagline')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                @enderror
-                <p class="text-sm text-gray-500 mt-1">Company tagline displayed in the footer</p>
-            </div>
-
-            <div class="mb-6">
-                <label for="system_email" class="block text-sm font-medium text-gray-700 mb-2">System Email</label>
-                <input type="email" name="system_email" id="system_email"
-                       class="w-full px-3 py-2 border border-gray-300 rounded-none focus:outline-none focus:ring-2 focus:ring-brand-primary"
-                       value="{{ old('system_email', $systemEmail) }}"
-                       placeholder="info@training.com">
-                @error('system_email')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                @enderror
-                <p class="text-sm text-gray-500 mt-1">Email address displayed in the footer and contact page</p>
-            </div>
-
-            <div class="mb-6">
-                <label for="phone_number" class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-                <input type="text" name="phone_number" id="phone_number"
-                       class="w-full px-3 py-2 border border-gray-300 rounded-none focus:outline-none focus:ring-2 focus:ring-brand-primary"
-                       value="{{ old('phone_number', $phoneNumber) }}"
-                       placeholder="(555) 123-4567">
-                @error('phone_number')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                @enderror
-                <p class="text-sm text-gray-500 mt-1">Phone number displayed in the footer and contact page</p>
-            </div>
-
-            <div class="mb-6">
-                <label for="contact_email" class="block text-sm font-medium text-gray-700 mb-2">Contact Form Email</label>
-                <input type="email" name="contact_email" id="contact_email"
-                       class="w-full px-3 py-2 border border-gray-300 rounded-none focus:outline-none focus:ring-2 focus:ring-brand-primary"
-                       value="{{ old('contact_email', $contactEmail) }}"
-                       placeholder="contact@training.com">
-                @error('contact_email')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                @enderror
-                <p class="text-sm text-gray-500 mt-1">Email address where contact form submissions will be sent. If not set, system email will be used.</p>
-            </div>
-        </div>
-
-        <!-- Social Media Links -->
-        <div class="bg-white rounded-none shadow p-8 mb-6">
-            <h2 class="text-2xl font-bold text-gray-900 mb-6">Social Media Links</h2>
-
-            <div class="mb-6">
-                <label for="social_facebook" class="block text-sm font-medium text-gray-700 mb-2">Facebook URL</label>
-                <input type="url" name="social_facebook" id="social_facebook"
-                       class="w-full px-3 py-2 border border-gray-300 rounded-none focus:outline-none focus:ring-2 focus:ring-brand-primary"
-                       value="{{ old('social_facebook', $socialFacebook) }}"
-                       placeholder="https://facebook.com/yourpage">
-                @error('social_facebook')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <div class="mb-6">
-                <label for="social_instagram" class="block text-sm font-medium text-gray-700 mb-2">Instagram URL</label>
-                <input type="url" name="social_instagram" id="social_instagram"
-                       class="w-full px-3 py-2 border border-gray-300 rounded-none focus:outline-none focus:ring-2 focus:ring-brand-primary"
-                       value="{{ old('social_instagram', $socialInstagram) }}"
-                       placeholder="https://instagram.com/yourprofile">
-                @error('social_instagram')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <div class="mb-6">
-                <label for="social_youtube" class="block text-sm font-medium text-gray-700 mb-2">YouTube URL</label>
-                <input type="url" name="social_youtube" id="social_youtube"
-                       class="w-full px-3 py-2 border border-gray-300 rounded-none focus:outline-none focus:ring-2 focus:ring-brand-primary"
-                       value="{{ old('social_youtube', $socialYoutube) }}"
-                       placeholder="https://youtube.com/yourchannel">
-                @error('social_youtube')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <div class="mb-6">
-                <label for="social_twitter" class="block text-sm font-medium text-gray-700 mb-2">Twitter URL</label>
-                <input type="url" name="social_twitter" id="social_twitter"
-                       class="w-full px-3 py-2 border border-gray-300 rounded-none focus:outline-none focus:ring-2 focus:ring-brand-primary"
-                       value="{{ old('social_twitter', $socialTwitter) }}"
-                       placeholder="https://twitter.com/yourprofile">
-                @error('social_twitter')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <div class="mb-6">
-                <label for="social_linkedin" class="block text-sm font-medium text-gray-700 mb-2">LinkedIn URL</label>
-                <input type="url" name="social_linkedin" id="social_linkedin"
-                       class="w-full px-3 py-2 border border-gray-300 rounded-none focus:outline-none focus:ring-2 focus:ring-brand-primary"
-                       value="{{ old('social_linkedin', $socialLinkedin) }}"
-                       placeholder="https://linkedin.com/company/yourcompany">
-                @error('social_linkedin')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-        </div>
-
-        <!-- Payment Settings -->
-        <div class="bg-white rounded-none shadow p-8 mb-6">
-            <h2 class="text-2xl font-bold text-gray-900 mb-6">Payment Settings</h2>
-
-            <div class="mb-6">
-                <label for="stripe_public_key" class="block text-sm font-medium text-gray-700 mb-2">Stripe Publishable Key</label>
-                <input type="text" name="stripe_public_key" id="stripe_public_key"
-                       class="w-full px-3 py-2 border border-gray-300 rounded-none focus:outline-none focus:ring-2 focus:ring-brand-primary"
-                       value="{{ old('stripe_public_key', $stripePublicKey) }}"
-                       placeholder="pk_test_...">
-                @error('stripe_public_key')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                @enderror
-                <p class="text-sm text-gray-500 mt-1">Your Stripe publishable key (starts with pk_)</p>
-            </div>
-
-            <div class="mb-6">
-                <label for="stripe_secret_key" class="block text-sm font-medium text-gray-700 mb-2">Stripe Secret Key</label>
-                <input type="password" name="stripe_secret_key" id="stripe_secret_key"
-                       class="w-full px-3 py-2 border border-gray-300 rounded-none focus:outline-none focus:ring-2 focus:ring-brand-primary"
-                       value="{{ old('stripe_secret_key', $stripeSecretKey) }}"
-                       placeholder="sk_test_...">
-                @error('stripe_secret_key')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                @enderror
-                <p class="text-sm text-gray-500 mt-1">Your Stripe secret key (starts with sk_)</p>
-            </div>
-
-            <div class="mb-6">
-                <label for="stripe_webhook_secret" class="block text-sm font-medium text-gray-700 mb-2">Stripe Webhook Secret</label>
-                <input type="password" name="stripe_webhook_secret" id="stripe_webhook_secret"
-                       class="w-full px-3 py-2 border border-gray-300 rounded-none focus:outline-none focus:ring-2 focus:ring-brand-primary"
-                       value="{{ old('stripe_webhook_secret', $stripeWebhookSecret) }}"
-                       placeholder="whsec_...">
-                @error('stripe_webhook_secret')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                @enderror
-                <p class="text-sm text-gray-500 mt-1">Your Stripe webhook signing secret (starts with whsec_)</p>
-            </div>
-
-            <div class="bg-blue-50 border border-blue-200 rounded-none p-4 mb-6">
-                <h3 class="text-sm font-semibold text-blue-900 mb-2">How to get your Stripe keys:</h3>
-                <ol class="text-sm text-blue-800 list-decimal list-inside space-y-1">
-                    <li>Log in to your <a href="https://dashboard.stripe.com" target="_blank" class="underline">Stripe Dashboard</a></li>
-                    <li>Go to Developers → API keys</li>
-                    <li>Copy your Publishable key and Secret key</li>
-                    <li>For webhooks, go to Developers → Webhooks and create an endpoint pointing to: <code class="bg-blue-100 px-1">{{ url('/webhooks/stripe') }}</code></li>
-                </ol>
-            </div>
-        </div>
-
-        <!-- Home Page Content -->
-        <div class="bg-white rounded-none shadow p-8 mb-6">
-            <h2 class="text-2xl font-bold text-gray-900 mb-6">Home Page Content</h2>
             <p class="text-sm text-gray-500 mb-6">Edit the text and labels shown on the front-end home page. Leave blank to use the default.</p>
 
             <div class="space-y-6 mb-6">
@@ -190,10 +30,22 @@
                         <label for="home_hero_subtitle" class="block text-sm font-medium text-gray-700 mb-2">Hero Subtitle</label>
                         <input type="text" name="home_hero_subtitle" id="home_hero_subtitle" class="w-full px-3 py-2 border border-gray-300 rounded-none focus:outline-none focus:ring-2 focus:ring-brand-primary" value="{{ old('home_hero_subtitle', $homeHeroSubtitle ?? '') }}" placeholder="Enhance your skills with our expert-led courses...">
                     </div>
-                    <div>
-                        <label for="home_hero_background" class="block text-sm font-medium text-gray-700 mb-2">Hero Background Image Path</label>
-                        <input type="text" name="home_hero_background" id="home_hero_background" class="w-full px-3 py-2 border border-gray-300 rounded-none focus:outline-none focus:ring-2 focus:ring-brand-primary" value="{{ old('home_hero_background', $homeHeroBackground ?? 'images/cover.png') }}" placeholder="images/cover.png">
-                        <p class="text-xs text-gray-500 mt-1">Path relative to public folder (e.g. images/cover.png)</p>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Hero Background Image</label>
+                        @if(!empty($heroBackgroundUrl))
+                        <div class="mb-3">
+                            <p class="text-xs text-gray-500 mb-2">Current image:</p>
+                            <img src="{{ $heroBackgroundUrl }}" alt="Current hero background" class="max-w-full h-40 object-cover border border-gray-300 rounded-none">
+                        </div>
+                        @endif
+                        <input type="file" name="home_hero_background_image" id="home_hero_background_image" accept="image/jpeg,image/png,image/jpg,image/gif,image/webp" class="w-full px-3 py-2 border border-gray-300 rounded-none focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                        <p class="text-xs text-gray-500 mt-1">JPG, PNG, GIF or WebP. Max 5 MB. Upload a new image to replace the current one.</p>
+                        <p class="text-xs text-gray-500 mt-2">Or use a path below (e.g. images/cover.png) to use an existing file from the public folder.</p>
+                        <input type="text" name="home_hero_background" id="home_hero_background" class="w-full px-3 py-2 border border-gray-300 rounded-none focus:outline-none focus:ring-2 focus:ring-brand-primary mt-2" value="{{ old('home_hero_background', $homeHeroBackground ?? 'images/cover.png') }}" placeholder="images/cover.png">
+                        <p class="text-xs text-gray-500 mt-1">Path relative to public folder. Leave as is if you uploaded an image above.</p>
+                        @error('home_hero_background_image')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
                     <div>
                         <label for="home_hero_btn_primary" class="block text-sm font-medium text-gray-700 mb-2">Primary Button Text</label>
@@ -214,8 +66,8 @@
                 </div>
                 <div>
                     <label for="home_intro_content" class="block text-sm font-medium text-gray-700 mb-2">Intro Content</label>
-                    <textarea name="home_intro_content" id="home_intro_content" rows="6" class="w-full px-3 py-2 border border-gray-300 rounded-none focus:outline-none focus:ring-2 focus:ring-brand-primary" placeholder="Welcome text (HTML allowed)...">{{ old('home_intro_content', $homeIntroContent ?? '') }}</textarea>
-                    <p class="text-xs text-gray-500 mt-1">For rich text editing with images, use <a href="{{ route('admin.home.edit') }}" class="text-brand-primary underline">Website Content → Home</a>.</p>
+                    <textarea name="home_intro_content" id="home_intro_content" rows="6" class="w-full px-3 py-2 border border-gray-300 rounded-none focus:outline-none focus:ring-2 focus:ring-brand-primary" placeholder="Welcome text and description...">{{ old('home_intro_content', $homeIntroContent ?? '') }}</textarea>
+                    <p class="text-xs text-gray-500 mt-1">Rich text: you can format text, add links and images.</p>
                 </div>
             </div>
 
@@ -304,13 +156,45 @@
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="flex justify-end">
-            <button type="submit" class="bg-brand-primary text-white px-6 py-2 rounded-none hover:bg-brand-dark">
-                Save Settings
-            </button>
+            <div class="flex justify-end">
+                <button type="submit" class="bg-brand-primary text-white px-6 py-2 rounded-none hover:bg-brand-dark">
+                    Save Home Page Content
+                </button>
+            </div>
         </div>
     </form>
 </div>
+@push('js')
+<script>
+(function() {
+    var editorId = 'home_intro_content';
+    var ckfinderBase = '{{ asset("ckfinder/ckfinder.html") }}';
+    var ckfinderImg = '{{ asset("ckfinder/ckfinder.html?type=Images") }}';
+    var connector = '{{ asset("ckfinder/core/connector/php/connector.php") }}';
+    function initCK() {
+        if (typeof CKEDITOR === 'undefined') return false;
+        var el = document.getElementById(editorId);
+        if (!el || CKEDITOR.instances[editorId]) return !!CKEDITOR.instances[editorId];
+        try {
+            CKEDITOR.replace(editorId, { height: '300px', filebrowserBrowseUrl: ckfinderBase, filebrowserImageBrowseUrl: ckfinderImg, filebrowserUploadUrl: connector + '?command=QuickUpload&type=Files', filebrowserImageUploadUrl: connector + '?command=QuickUpload&type=Images' });
+            return true;
+        } catch (e) { return false; }
+    }
+    function bindSubmit() {
+        var form = document.querySelector('form');
+        if (!form || form._ckBound) return;
+        form._ckBound = true;
+        form.addEventListener('submit', function() {
+            if (typeof CKEDITOR !== 'undefined') { for (var k in CKEDITOR.instances) { if (CKEDITOR.instances[k]) CKEDITOR.instances[k].updateElement(); } }
+        });
+    }
+    function run() { initCK(); bindSubmit(); }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() { run(); var n = 0; var t = setInterval(function() { if (initCK() || ++n > 20) clearInterval(t); }, 100); });
+    } else { run(); var n = 0; var t = setInterval(function() { if (initCK() || ++n > 20) clearInterval(t); }, 100); }
+    window.addEventListener('load', run);
+})();
+</script>
+@endpush
 @endsection

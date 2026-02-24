@@ -11,6 +11,7 @@ class BookingController extends Controller
     public function index()
     {
         $bookings = Booking::with('course', 'payment')
+            ->whereHas('payment', fn ($q) => $q->whereIn('status', ['completed', 'failed']))
             ->latest()
             ->paginate(20);
 

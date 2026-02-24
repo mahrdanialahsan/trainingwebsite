@@ -21,7 +21,8 @@ class DashboardController extends Controller
             'total_revenue' => Payment::where('status', 'completed')->sum('amount'),
         ];
 
-        $recentBookings = Booking::with('course')
+        $recentBookings = Booking::with('course', 'payment')
+            ->whereHas('payment', fn ($q) => $q->whereIn('status', ['completed', 'failed']))
             ->latest()
             ->take(10)
             ->get();

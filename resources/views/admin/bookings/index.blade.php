@@ -36,8 +36,16 @@
                             {{ ucfirst($booking->status) }}
                         </span>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {{ $booking->payment_completed ? 'Paid' : 'Pending' }}
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        @if($booking->payment)
+                            @if($booking->payment->status === 'completed')
+                                <span class="px-2 py-1 text-xs font-semibold rounded-none bg-green-100 text-green-800">Paid</span>
+                            @else
+                                <span class="px-2 py-1 text-xs font-semibold rounded-none bg-red-100 text-red-800">Failed</span>
+                            @endif
+                        @else
+                            <span class="text-gray-500">—</span>
+                        @endif
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <a href="{{ route('admin.bookings.show', $booking) }}" class="text-brand-primary hover:text-blue-900">View</a>
